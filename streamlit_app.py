@@ -1,4 +1,5 @@
 import random
+import re
 import textwrap
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
@@ -9,21 +10,19 @@ import streamlit as st
 # Utility types & constants
 # =========================
 
+
 @dataclass
 class Question:
     id: str
     text: str
-    # Map normalized answers "yes"/"no" -> indicator label
-    # Allowed labels (per spec): "def_ai", "def_not_ai", "ai_ind", "not_ai_ind", "neutral"
-    indicators: Dict[str, str]
-    # Name of the boolean property on a card used to derive the true answer ("yes" if True else "no")
-    prop: str
+    indicators: Dict[str, str]  # "yes"/"no" -> indicator label
+    prop: str  # property on a card used to derive true answer
 
-# Weighting scheme to aggregate signals into a final guess
+
 INDICATOR_WEIGHTS = {
-    "def_ai":  3,
+    "def_ai": 3,
     "def_not_ai": -3,
-    "ai_ind":  1,
+    "ai_ind": 1,
     "not_ai_ind": -1,
     "neutral": 0,
 }
@@ -34,100 +33,99 @@ MAX_NEUTRALS = 1
 # =========================
 # Knowledge base: Questions
 # =========================
-# Implemented exactly as provided in your specification (including edge cases).
+
+
 QUESTIONS: List[Question] = [
     # 1. Inference
     Question(
-        id="inf_input",
-        text="Does this system receive input data to solve a problem?",
-        indicators={"yes": "neutral", "no": "not_ai_ind"},
-        prop="receives_input",
+        "inf_input",
+        "Does this system receive input data to solve a problem?",
+        {"yes": "neutral", "no": "not_ai_ind"},
+        "receives_input",
     ),
     Question(
-        id="inf_rules_only",
-        text="Does it work following only human-programmed rules?",
-        # NOTE: Mapping follows the prompt verbatim:
-        # yes = not ai indicator; no = definitive indicator: not ai
-        indicators={"yes": "not_ai_ind", "no": "def_not_ai"},
-        prop="rules_only",
+        "inf_rules_only",
+        "Does it work following only human-programmed rules?",
+        {"yes": "not_ai_ind", "no": "def_not_ai"},
+        "rules_only",
     ),
     Question(
-        id="inf_output",
-        text="Does it generate output data that provides a solution?",
-        indicators={"yes": "neutral", "no": "not_ai_ind"},
-        prop="generates_output",
+        "inf_output",
+        "Does it generate output data that provides a solution?",
+        {"yes": "neutral", "no": "not_ai_ind"},
+        "generates_output",
     ),
     Question(
-        id="inf_influence",
-        text="Can its outputs influence humans or other systems?",
-        indicators={"yes": "neutral", "no": "not_ai_ind"},
-        prop="influences",
+        "inf_influence",
+        "Can its outputs influence humans or other systems?",
+        {"yes": "neutral", "no": "not_ai_ind"},
+        "influences",
     ),
 
     # 2. Outputs
     Question(
-        id="out_predicts",
-        text="Does the system predict something?",
-        indicators={"yes": "ai_ind", "no": "not_ai_ind"},
-        prop="predicts",
+        "out_predicts",
+        "Does the system predict something?",
+        {"yes": "ai_ind", "no": "not_ai_ind"},
+        "predicts",
     ),
     Question(
-        id="out_creates_content",
-        text="Does it create content (text, images, video, audio)?",
-        indicators={"yes": "ai_ind", "no": "not_ai_ind"},
-        prop="creates_content",
+        "out_creates_content",
+        "Does it create content (text, images, video, audio)?",
+        {"yes": "ai_ind", "no": "not_ai_ind"},
+        "creates_content",
     ),
     Question(
-        id="out_recommends",
-        text="Does it provide recommendations (e.g., suggesting actions or products)?",
-        indicators={"yes": "ai_ind", "no": "not_ai_ind"},
-        prop="recommends",
+        "out_recommends",
+        "Does it provide recommendations (e.g., suggesting actions or products)?",
+        {"yes": "ai_ind", "no": "not_ai_ind"},
+        "recommends",
     ),
     Question(
-        id="out_takes_decisions",
-        text="Does it take decisions directly, without waiting for a human?",
-        indicators={"yes": "ai_ind", "no": "neutral"},
-        prop="takes_decisions_direct",
+        "out_takes_decisions",
+        "Does it take decisions directly, without waiting for a human?",
+        {"yes": "ai_ind", "no": "neutral"},
+        "takes_decisions_direct",
     ),
 
     # 3. Autonomy
     Question(
-        id="auton_can_do_on_own",
-        text="Can the system do something on its own once it receives input (without a person pressing every button)?",
-        indicators={"yes": "ai_ind", "no": "def_not_ai"},
-        prop="can_do_on_own",
+        "auton_can_do_on_own",
+        "Can the system do something on its own once it receives input (without a person pressing every button)?",
+        {"yes": "ai_ind", "no": "def_not_ai"},
+        "can_do_on_own",
     ),
     Question(
-        id="auton_full_autonomy",
-        text="Does it act with full autonomy, making decisions that directly affect the world without human review?",
-        indicators={"yes": "ai_ind", "no": "def_not_ai"},
-        prop="acts_full_autonomy",
+        "auton_full_autonomy",
+        "Does it act with full autonomy, making decisions that directly affect the world without human review?",
+        {"yes": "ai_ind", "no": "def_not_ai"},
+        "acts_full_autonomy",
     ),
     Question(
-        id="auton_limited",
-        text="Does it have limited autonomy (provides outputs but still needs humans to decide or act)?",
-        indicators={"yes": "ai_ind", "no": "neutral"},
-        prop="limited_autonomy",
+        "auton_limited",
+        "Does it have limited autonomy (provides outputs but still needs humans to decide or act)?",
+        {"yes": "ai_ind", "no": "neutral"},
+        "limited_autonomy",
     ),
     Question(
-        id="auton_non_autonomous",
-        text="Is it non-autonomous, only working step by step when a human tells it exactly what to do?",
-        indicators={"yes": "def_not_ai", "no": "ai_ind"},
-        prop="non_autonomous",
+        "auton_non_autonomous",
+        "Is it non-autonomous, only working step by step when a human tells it exactly what to do?",
+        {"yes": "def_not_ai", "no": "ai_ind"},
+        "non_autonomous",
     ),
 
     # 4. Adaptiveness
     Question(
-        id="adapt_never_changes",
-        text="Does the system stay the same and never change how it behaves?",
-        indicators={"yes": "neutral", "no": "ai_ind"},
-        prop="never_changes",
+        "adapt_never_changes",
+        "Does the system stay the same and never change how it behaves?",
+        {"yes": "neutral", "no": "ai_ind"},
+        "never_changes",
     ),
     Question(
-        id="adapt_online_learns",
-        text="Does it adapt and learn from new data while it operates?",
-        indicators={"yes": "def_ai", "no": "neutral"},
-        prop="adapts_online",
+        "adapt_online_learns",
+        "Does it adapt and learn from new data while it operates?",
+        {"yes": "def_ai", "no": "neutral"},
+        "adapts_online",
     ),
 ]
 
@@ -135,19 +133,20 @@ QUESTIONS: List[Question] = [
 # Knowledge base: Cards and true answers
 # =======================================
 
+
 @dataclass
 class Card:
     id: str
     name: str
-    is_ai_system: bool
+    is_ai_system: bool  # hidden from the player UI
     description: str
-    # Properties used by questions above (booleans)
     props: Dict[str, bool] = field(default_factory=dict)
 
-def wrap_desc(s: str) -> str:
-    return "\n".join(textwrap.wrap(s, width=80))
 
-# Helper to quickly define properties with sensible defaults
+def wrap_desc(s: str) -> str:
+    return "\n".join(textwrap.wrap(s, width=100))
+
+
 BASE_DEFAULTS = {
     "receives_input": True,
     "rules_only": False,
@@ -165,10 +164,12 @@ BASE_DEFAULTS = {
     "adapts_online": False,
 }
 
+
 def mk_props(**overrides) -> Dict[str, bool]:
     p = BASE_DEFAULTS.copy()
     p.update(overrides)
     return p
+
 
 # --- AI System Cards ---
 CARDS_AI: List[Card] = [
@@ -191,9 +192,9 @@ CARDS_AI: List[Card] = [
             limited_autonomy=True,
             non_autonomous=False,
             never_changes=False,
-            adapts_online=False,  # usually not online-learning in operation
+            adapts_online=False,
             rules_only=False,
-        )
+        ),
     ),
     Card(
         id="ai_spam_filter",
@@ -209,15 +210,15 @@ CARDS_AI: List[Card] = [
             predicts=True,
             creates_content=False,
             recommends=False,
-            takes_decisions_direct=True,     # auto routes to spam/inbox
+            takes_decisions_direct=True,
             can_do_on_own=True,
             limited_autonomy=True,
             non_autonomous=False,
             never_changes=False,
             adapts_online=False,
             rules_only=False,
-            influences=True,  # affects other systems / users
-        )
+            influences=True,
+        ),
     ),
     Card(
         id="ai_drug_disc",
@@ -233,12 +234,12 @@ CARDS_AI: List[Card] = [
             predicts=True,
             takes_decisions_direct=False,
             creates_content=False,
-            recommends=True,   # suggests candidates
+            recommends=True,
             can_do_on_own=True,
             limited_autonomy=True,
             adapts_online=False,
             rules_only=False,
-        )
+        ),
     ),
     Card(
         id="ai_reco",
@@ -257,9 +258,9 @@ CARDS_AI: List[Card] = [
             creates_content=False,
             can_do_on_own=True,
             limited_autonomy=True,
-            adapts_online=True,   # updates online per description
+            adapts_online=True,
             rules_only=False,
-        )
+        ),
     ),
     Card(
         id="ai_asr",
@@ -272,7 +273,7 @@ CARDS_AI: List[Card] = [
             "Output: transcribed text."
         ),
         props=mk_props(
-            predicts=True,  # classification/sequence prediction
+            predicts=True,
             creates_content=False,
             recommends=False,
             takes_decisions_direct=False,
@@ -280,7 +281,7 @@ CARDS_AI: List[Card] = [
             limited_autonomy=True,
             adapts_online=False,
             rules_only=False,
-        )
+        ),
     ),
     Card(
         id="ai_img_cls",
@@ -301,7 +302,7 @@ CARDS_AI: List[Card] = [
             limited_autonomy=True,
             adapts_online=False,
             rules_only=False,
-        )
+        ),
     ),
     Card(
         id="ai_screen",
@@ -311,11 +312,11 @@ CARDS_AI: List[Card] = [
             "Input: Candidate CVs and application details. "
             "How it works: developed using past hiring outcomes to learn which candidate characteristics are a good fit. "
             "Objective: Predict candidate–job match. "
-            "Output: (ranked candidates / fit score)."
+            "Output: ranked candidates / fit score."
         ),
         props=mk_props(
             predicts=True,
-            recommends=True,         # recommends candidates
+            recommends=True,
             takes_decisions_direct=False,
             creates_content=False,
             can_do_on_own=True,
@@ -323,13 +324,12 @@ CARDS_AI: List[Card] = [
             adapts_online=False,
             rules_only=False,
             influences=True,
-        )
+        ),
     ),
 ]
 
+
 # --- Non-AI System Cards ---
-# These still answer truthfully to prediction/recommendation questions where applicable,
-# but are considered non-AI because they operate via simple, predefined rules.
 CARDS_NON_AI: List[Card] = [
     Card(
         id="na_excel",
@@ -351,7 +351,7 @@ CARDS_NON_AI: List[Card] = [
             non_autonomous=True,
             never_changes=True,
             influences=False,
-        )
+        ),
     ),
     Card(
         id="na_db_search",
@@ -373,7 +373,7 @@ CARDS_NON_AI: List[Card] = [
             non_autonomous=True,
             never_changes=True,
             influences=False,
-        )
+        ),
     ),
     Card(
         id="na_sales_dash",
@@ -394,8 +394,8 @@ CARDS_NON_AI: List[Card] = [
             limited_autonomy=False,
             non_autonomous=True,
             never_changes=True,
-            influences=True,  # informs humans, but simple
-        )
+            influences=True,
+        ),
     ),
     Card(
         id="na_survey",
@@ -417,7 +417,7 @@ CARDS_NON_AI: List[Card] = [
             non_autonomous=True,
             never_changes=True,
             influences=True,
-        )
+        ),
     ),
     Card(
         id="na_inventory_forecaster",
@@ -431,7 +431,7 @@ CARDS_NON_AI: List[Card] = [
         ),
         props=mk_props(
             rules_only=True,
-            predicts=True,          # yes, via simple average
+            predicts=True,
             recommends=False,
             takes_decisions_direct=False,
             can_do_on_own=False,
@@ -439,7 +439,7 @@ CARDS_NON_AI: List[Card] = [
             non_autonomous=True,
             never_changes=True,
             influences=True,
-        )
+        ),
     ),
     Card(
         id="na_ticket_eta",
@@ -453,7 +453,7 @@ CARDS_NON_AI: List[Card] = [
         ),
         props=mk_props(
             rules_only=True,
-            predicts=True,          # average-based estimate
+            predicts=True,
             recommends=False,
             takes_decisions_direct=False,
             can_do_on_own=False,
@@ -461,50 +461,71 @@ CARDS_NON_AI: List[Card] = [
             non_autonomous=True,
             never_changes=True,
             influences=True,
-        )
+        ),
     ),
 ]
+
 
 ALL_CARDS: List[Card] = CARDS_AI + CARDS_NON_AI
 CARDS_BY_ID: Dict[str, Card] = {c.id: c for c in ALL_CARDS}
 
 # =========================
-# Game state & logic
+# Helpers & game logic
 # =========================
 
-def reset_game(random_draw: bool = True, chosen_card_id: Optional[str] = None):
-    if random_draw:
-        card = random.choice(ALL_CARDS)
-    else:
-        card = CARDS_BY_ID[chosen_card_id] if chosen_card_id else random.choice(ALL_CARDS)
 
+def parse_card_sections(desc: str) -> Dict[str, str]:
+    """
+    Parse 'Input:', 'How it works:', 'Objective:', 'Output:' into sections
+    for nicer display. Falls back gracefully if not found.
+    """
+    sections = {"Input": "", "How it works": "", "Objective": "", "Output": ""}
+    for key in sections.keys():
+        sections[key] = ""
+
+    pattern = r"(Input|How it works|Objective|Output):"
+    parts = re.split(pattern, desc)
+    current = None
+    buf = []
+    for part in parts:
+        if part in ("Input", "How it works", "Objective", "Output"):
+            if current and buf:
+                sections[current] = " ".join(buf).strip()
+            current = part
+            buf = []
+        else:
+            buf.append(part)
+    if current and buf:
+        sections[current] = " ".join(buf).strip()
+
+    for k, v in sections.items():
+        sections[k] = v.strip()
+    return sections
+
+
+def reset_game(random_draw: bool = True, chosen_card_id: Optional[str] = None):
+    card = random.choice(ALL_CARDS) if random_draw else CARDS_BY_ID[chosen_card_id]
     st.session_state.game = {
         "card_id": card.id,
-        "revealed": False,
-        "asked": [],              # list of (question_id, answer_yes_no, indicator_label)
+        "asked": [],
         "neutrals_used": 0,
         "completed": False,
-        "final_guess": None,      # "ai" | "not_ai" | "cannot_guess"
+        "final_guess": None,
         "player_points": None,
-        "per_q_correct": None,    # list of booleans aligned with asked
+        "per_q_correct": None,
         "computer_guess_correct": None,
     }
+
 
 def normalize_answer(ans: str) -> str:
     return ans.strip().lower()
 
+
 def indicator_label_to_weight(lbl: str) -> int:
     return INDICATOR_WEIGHTS.get(lbl, 0)
 
+
 def compute_final_guess(asked: List[Tuple[str, str, str]]) -> str:
-    """
-    asked: list of (q_id, ans, indicator_label)
-    Final guess per rules:
-      - If any definitive AI and no definitive Not AI -> "ai"
-      - If any definitive Not AI and no definitive AI -> "not_ai"
-      - If both present -> "cannot_guess"
-      - Else use score: sum(weights) > 0 -> "ai"; < 0 -> "not_ai"; == 0 -> "cannot_guess"
-    """
     has_def_ai = any(lbl == "def_ai" for _, _, lbl in asked)
     has_def_not_ai = any(lbl == "def_not_ai" for _, _, lbl in asked)
     if has_def_ai and not has_def_not_ai:
@@ -521,14 +542,13 @@ def compute_final_guess(asked: List[Tuple[str, str, str]]) -> str:
     else:
         return "cannot_guess"
 
+
 def get_true_answer(card: Card, q: Question) -> str:
     val = bool(card.props.get(q.prop, False))
     return "yes" if val else "no"
 
+
 def score_player_answers(card: Card, asked: List[Tuple[str, str, str]]) -> Tuple[int, List[bool]]:
-    """
-    +2 for each correct yes/no; -1 for each incorrect yes/no
-    """
     total = 0
     correctness = []
     for q_id, ans, _ in asked:
@@ -539,24 +559,14 @@ def score_player_answers(card: Card, asked: List[Tuple[str, str, str]]) -> Tuple
         total += 2 if correct else -1
     return total, correctness
 
-def next_question_candidate(asked_ids: set, neutrals_used: int) -> Optional[Question]:
-    """
-    Simple heuristic:
-      - Prefer questions not yet asked.
-      - Prefer those whose possible outcomes include non-neutral indicators.
-      - Allow at most one neutral outcome to be registered (we enforce after answer).
-      - Priority ordering: any with a potential 'def_*' in mapping > 'ai_ind'/'not_ai_ind' > 'neutral-only'
-      - We keep the natural order within the defined QUESTION list for simplicity.
-    """
+
+def next_question_candidate(asked_ids: set) -> Optional[Question]:
     def priority(q: Question) -> int:
         vals = set(q.indicators.values())
-        # Highest if can produce a definitive outcome
         if "def_ai" in vals or "def_not_ai" in vals:
             return 3
-        # Next if produces directional indicators
         if "ai_ind" in vals or "not_ai_ind" in vals:
             return 2
-        # all neutral
         return 1
 
     candidates = [q for q in QUESTIONS if q.id not in asked_ids]
@@ -565,71 +575,79 @@ def next_question_candidate(asked_ids: set, neutrals_used: int) -> Optional[Ques
     candidates.sort(key=priority, reverse=True)
     return candidates[0]
 
-def reveal_and_finalize():
-    st.session_state.game["revealed"] = True
-
-def complete_game():
-    st.session_state.game["completed"] = True
 
 # ==============
 # Streamlit UI
 # ==============
 
-st.set_page_config(page_title="AI Guess Who", page_icon="🃏", layout="centered")
 
+st.set_page_config(page_title="AI Guess Who", page_icon="🃏", layout="centered")
 st.title("🃏 AI Guess Who")
 
+# Initialize session
+if "game" not in st.session_state:
+    reset_game(random_draw=True)
+
+game = st.session_state.game
+current_card = CARDS_BY_ID[game["card_id"]]
+
+# ---- Card details (ALWAYS visible, without revealing AI / Non-AI) ----
+st.subheader("🪪 Your Card")
+secs = parse_card_sections(current_card.description)
+
+with st.container(border=True):
+    st.markdown(f"### {current_card.name}")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Input**")
+        st.write(secs.get("Input", ""))
+        st.markdown("**Objective**")
+        st.write(secs.get("Objective", ""))
+    with col2:
+        st.markdown("**How it works**")
+        st.write(secs.get("How it works", ""))
+        st.markdown("**Output**")
+        st.write(secs.get("Output", ""))
+
+with st.expander("Optional: technical properties (for advanced players)"):
+    st.code(current_card.props, language="python")
+
+st.caption(
+    "You know the card and what it does—but not whether it's an AI system. The Computer will try to guess using yes/no questions."
+)
+
+st.divider()
+
+# ---- Sidebar: New game / picking without revealing AI/Non-AI in labels ----
 with st.sidebar:
-    st.header("Setup")
-    if "game" not in st.session_state:
-        reset_game(random_draw=True)
-
-    game = st.session_state.game
-    current_card = CARDS_BY_ID[game["card_id"]]
-
-    st.markdown("**Card Holder** draws a random card. The Computer (this app) is the Guesser.")
-    reveal = st.toggle("Reveal card to player", value=game["revealed"], help="Keep hidden to play honestly; reveal for testing.")
-    if reveal != game["revealed"]:
-        reveal_and_finalize()
-
-    if reveal:
-        st.success(f"**Card:** {current_card.name} — {'AI System' if current_card.is_ai_system else 'Non-AI System'}")
-        with st.expander("Card details", expanded=False):
-            st.write(current_card.description)
-            st.code(current_card.props, language="python")
-
-    st.divider()
-    st.subheader("New game")
+    st.header("New game")
     pick_method = st.radio("Card selection", ["Random draw", "Pick card"], horizontal=True)
     chosen_id = None
     if pick_method == "Pick card":
-        options = [f"{c.name} ({'AI' if c.is_ai_system else 'Non-AI'})|{c.id}" for c in ALL_CARDS]
+        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
         sel = st.selectbox("Choose a card to hold", options=options)
         chosen_id = sel.split("|")[-1]
     if st.button("Start new game", type="primary", use_container_width=True):
-        reset_game(random_draw=(pick_method=="Random draw"), chosen_card_id=chosen_id)
+        reset_game(
+            random_draw=(pick_method == "Random draw"),
+            chosen_card_id=chosen_id or random.choice(ALL_CARDS).id,
+        )
         st.rerun()
 
-st.caption("Rules: The Computer asks up to 5 yes/no questions (max 1 neutral). Then it guesses whether the hidden card is an AI system.")
-
-# Gameplay area
-game = st.session_state.game
-current_card = CARDS_BY_ID[game["card_id"]]
+# ---- Progress ----
 asked_records: List[Tuple[str, str, str]] = game["asked"]
-asked_ids = {q_id for (q_id, _, _) in asked_records}
-
-# Progress
 st.progress(len(asked_records) / MAX_QUESTIONS, text=f"Questions asked: {len(asked_records)} / {MAX_QUESTIONS}")
 
-# Ask next question if we still can
+# ---- Ask next question ----
 can_ask_more = (len(asked_records) < MAX_QUESTIONS) and (not game["completed"])
 
 if can_ask_more:
-    q = next_question_candidate(asked_ids, game["neutrals_used"])
+    q = next_question_candidate({q_id for (q_id, _, _) in asked_records})
     if q is None:
         game["completed"] = True
         st.rerun()
-    st.subheader("🤖 Computer asks:")
+
+    st.subheader("🤖 Computer asks")
     st.write(q.text)
     with st.form(f"form_{q.id}", clear_on_submit=True):
         ans = st.radio("Your answer", options=["Yes", "No"], index=0, horizontal=True)
@@ -637,27 +655,21 @@ if can_ask_more:
     if submitted:
         norm = "yes" if ans.lower().startswith("y") else "no"
         indicator_label = q.indicators.get(norm, "neutral")
-        # Respect neutral limit: we still record the Q&A, but if this answer yields neutral and we have used one already,
-        # we simply count it but do not allow further neutrals later (the rule says max 1 neutral question; this enforces the limit)
-        neutrals_used = game["neutrals_used"]
-        if indicator_label == "neutral":
-            if neutrals_used >= MAX_NEUTRALS:
-                st.warning("Neutral limit already reached; this neutral answer still recorded, but no more neutral questions will be allowed.")
-            game["neutrals_used"] = neutrals_used + 1
 
+        if indicator_label == "neutral":
+            game["neutrals_used"] += 1
         game["asked"].append((q.id, norm, indicator_label))
 
-        # Auto-complete when max reached
         if len(game["asked"]) >= MAX_QUESTIONS:
             game["completed"] = True
         st.rerun()
 
-# Show asked Q&A so far
+# ---- Asked so far ----
 if asked_records:
     st.subheader("📋 Q&A so far")
     for idx, (q_id, ans, lbl) in enumerate(asked_records, start=1):
         q_obj = next(q for q in QUESTIONS if q.id == q_id)
-        weight = indicator_label_to_weight(lbl)
+        weight = INDICATOR_WEIGHTS[lbl]
         label_text = {
             "def_ai": "Definitive: AI",
             "def_not_ai": "Definitive: Not AI",
@@ -665,13 +677,14 @@ if asked_records:
             "not_ai_ind": "Not-AI indicator",
             "neutral": "Neutral",
         }[lbl]
-        st.markdown(f"**Q{idx}.** {q_obj.text}\n\n• **Answer:** {ans.capitalize()}  \n• **Indicator:** {label_text} (weight {weight})")
+        st.markdown(
+            f"**Q{idx}.** {q_obj.text}\n\n" f"• **Answer:** {ans.capitalize()}  \n" f"• **Indicator:** {label_text} (weight {weight})"
+        )
 
-# If completed, compute guess
+# ---- Final guess & scoring ----
 if game["completed"]:
     if game["final_guess"] is None:
-        guess = compute_final_guess(game["asked"])
-        game["final_guess"] = guess
+        game["final_guess"] = compute_final_guess(game["asked"])
 
     st.divider()
     st.subheader("🎯 Computer’s final guess")
@@ -684,24 +697,19 @@ if game["completed"]:
         st.info("**I cannot guess based on your answers.**")
 
     with st.expander("How this guess was made", expanded=False):
-        score = sum(indicator_label_to_weight(lbl) for _, _, lbl in game["asked"])
+        score = sum(INDICATOR_WEIGHTS[lbl] for _, _, lbl in game["asked"])
         st.write(f"Aggregate score: **{score}**")
         st.write(f"Definitive AI present: **{any(lbl=='def_ai' for _,_,lbl in game['asked'])}**")
         st.write(f"Definitive Not-AI present: **{any(lbl=='def_not_ai' for _,_,lbl in game['asked'])}**")
         st.write(f"Neutral answers used: **{game['neutrals_used']}** / {MAX_NEUTRALS}")
 
-    # Player reveals correctness & per-question truth
-    st.divider()
-    st.subheader("🧪 Reveal & Score")
-
-    # Reveal actual card type against guess
-    comp_correct = None
+    current_card = CARDS_BY_ID[game["card_id"]]
     if guess == "ai":
         comp_correct = current_card.is_ai_system
     elif guess == "not_ai":
-        comp_correct = (not current_card.is_ai_system)
-    elif guess == "cannot_guess":
-        comp_correct = None  # neither correct nor incorrect; outcome is indeterminate
+        comp_correct = not current_card.is_ai_system
+    else:
+        comp_correct = None
 
     if comp_correct is True:
         st.success("**Computer guess correctness:** Correct (per Winning rules, the player wins).")
@@ -710,25 +718,28 @@ if game["completed"]:
     else:
         st.info("**Computer guess correctness:** Not applicable (no guess).")
 
-    game["computer_guess_correct"] = comp_correct
-
-    # Per-question correctness and scoring
     if game["player_points"] is None or game["per_q_correct"] is None:
         pts, corr = score_player_answers(current_card, game["asked"])
         game["player_points"] = pts
         game["per_q_correct"] = corr
 
     st.markdown("**Per-question truth table:**")
-    for i, (q_id, ans, lbl) in enumerate(game["asked"], start=1):
+    for i, (q_id, ans, _lbl) in enumerate(game["asked"], start=1):
         q_obj = next(q for q in QUESTIONS if q.id == q_id)
         truth = get_true_answer(current_card, q_obj)
-        correct = game["per_q_correct"][i-1]
+        correct = game["per_q_correct"][i - 1]
         if correct:
-            st.write(f"Q{i}: ✅ Your answer **{ans.capitalize()}** matches truth **{truth.capitalize()}**")
+            st.write(
+                f"Q{i}: ✅ Your answer **{ans.capitalize()}** matches truth **{truth.capitalize()}**"
+            )
         else:
-            st.write(f"Q{i}: ❌ Your answer **{ans.capitalize()}** was wrong; truth is **{truth.capitalize()}**")
+            st.write(
+                f"Q{i}: ❌ Your answer **{ans.capitalize()}** was wrong; truth is **{truth.capitalize()}**"
+            )
 
-    st.markdown(f"**Scoring system:** +2 per correct, −1 per incorrect  \n**Your points:** **{game['player_points']}**")
+    st.markdown(
+        f"**Scoring system:** +2 per correct, −1 per incorrect  \n**Your points:** **{game['player_points']}**"
+    )
 
     st.divider()
     st.subheader("🔁 Play again")
@@ -738,7 +749,7 @@ if game["completed"]:
             reset_game(random_draw=True)
             st.rerun()
     with col2:
-        options = [f"{c.name} ({'AI' if c.is_ai_system else 'Non-AI'})|{c.id}" for c in ALL_CARDS]
+        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
         sel = st.selectbox("Or pick specific card", options=options, key="again_pick")
         chosen = sel.split("|")[-1]
         if st.button("Start with chosen card"):
@@ -748,6 +759,6 @@ if game["completed"]:
 # Footer
 st.markdown("---")
 st.caption(
-    "Gameplay rules, question indicators, and card definitions are implemented as provided. "
-    "Note: Some indicator mappings may look counter-intuitive but are preserved verbatim."
+    "Card details are always visible to the player, but the AI/Non-AI label remains hidden until after the Computer’s guess."
 )
+

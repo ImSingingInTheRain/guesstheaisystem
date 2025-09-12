@@ -1,19 +1,22 @@
-# 💬 Chatbot template
+# 🃏 AI Guess Who
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
+A simple Streamlit game where the computer tries to guess whether a card describes an AI system.
+You, the player, select a card describing a technology. The computer then asks up to five yes/no
+questions and makes a final determination of “AI” or “Not AI”.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
+## Running locally
 
-### How to run it on your own machine
+1. Install the requirements:
 
-1. Install the requirements
-
+   ```bash
+   pip install -r requirements.txt
    ```
-   $ pip install -r requirements.txt
+
+2. Start the Streamlit app:
+
+   ```bash
+   streamlit run streamlit_app.py
    ```
 
-2. Run the app
+Enjoy the game!
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
