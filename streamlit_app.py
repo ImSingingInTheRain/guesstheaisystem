@@ -583,10 +583,11 @@ with st.sidebar:
     pick_method = st.radio("Card selection", ["Random draw", "Pick card"], horizontal=True)
     chosen_id = None
     if pick_method == "Pick card":
-        # Do not leak AI/Non-AI in labels
-        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
-        sel = st.selectbox("Choose a card", options=options)
-        chosen_id = sel.split("|")[-1]
+        # Show only the card name in the selector while keeping the id hidden
+        sel = st.selectbox(
+            "Choose a card", options=ALL_CARDS, format_func=lambda c: c.name
+        )
+        chosen_id = sel.id
 
     if st.button("Start new game", type="primary", use_container_width=True):
         reset_game(mode_key, chosen_id)
