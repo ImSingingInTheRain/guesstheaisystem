@@ -609,9 +609,6 @@ with st.container(border=True):
         st.markdown("**Output**")
         st.write(secs.get("Output", ""))
 
-with st.expander("Optional: technical properties (for advanced players)"):
-    st.code(current_card.props, language="python")
-
 st.caption(
     "You know the card and what it does—but not whether it's an AI system. The Computer will try to guess using yes/no questions."
 )
