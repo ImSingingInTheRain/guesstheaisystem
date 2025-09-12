@@ -1,8 +1,11 @@
 # 🃏 AI Guess Who
 
-A simple Streamlit game where the computer tries to guess whether a card describes an AI system.
-You, the player, select a card describing a technology. The computer then asks up to five yes/no
-questions and makes a final determination of “AI” or “Not AI”.
+A simple Streamlit game with two modes:
+
+* **Computer guesses (app asks):** You select a card describing a technology and answer up to five yes/no
+  questions from the computer, which then tries to guess whether the system is “AI” or “Not AI”.
+* **You guess (you ask):** The computer secretly chooses a card. You may ask up to five questions from the
+  list before making your own guess of “AI” or “Not AI”.
 
 ## Running locally
 

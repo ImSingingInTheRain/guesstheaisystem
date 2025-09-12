@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 import streamlit as st
 
 # =========================
-# Utility types & constants
+# Types & constants
 # =========================
 
 
@@ -16,7 +16,16 @@ class Question:
     id: str
     text: str
     indicators: Dict[str, str]  # "yes"/"no" -> indicator label
-    prop: str  # property on a card used to derive true answer
+    prop: str  # boolean property on a card
+
+
+@dataclass
+class Card:
+    id: str
+    name: str
+    is_ai_system: bool  # hidden in UI until reveal
+    description: str
+    props: Dict[str, bool] = field(default_factory=dict)
 
 
 INDICATOR_WEIGHTS = {
@@ -28,10 +37,10 @@ INDICATOR_WEIGHTS = {
 }
 
 MAX_QUESTIONS = 5
-MAX_NEUTRALS = 1
+MAX_NEUTRALS = 1  # applies to Mode A (Computer guesses)
 
 # =========================
-# Knowledge base: Questions
+# Questions (as specified)
 # =========================
 
 
@@ -46,7 +55,7 @@ QUESTIONS: List[Question] = [
     Question(
         "inf_rules_only",
         "Does it work following only human-programmed rules?",
-        {"yes": "def_not_ai", "no": "ai_ind"},
+        {"yes": "not_ai_ind", "no": "def_not_ai"},
         "rules_only",
     ),
     Question(
@@ -98,7 +107,7 @@ QUESTIONS: List[Question] = [
     Question(
         "auton_full_autonomy",
         "Does it act with full autonomy, making decisions that directly affect the world without human review?",
-        {"yes": "ai_ind", "no": "not_ai_ind"},
+        {"yes": "ai_ind", "no": "def_not_ai"},
         "acts_full_autonomy",
     ),
     Question(
@@ -129,18 +138,9 @@ QUESTIONS: List[Question] = [
     ),
 ]
 
-# =======================================
-# Knowledge base: Cards and true answers
-# =======================================
-
-
-@dataclass
-class Card:
-    id: str
-    name: str
-    is_ai_system: bool  # hidden from the player UI
-    description: str
-    props: Dict[str, bool] = field(default_factory=dict)
+# =========================
+# Cards
+# =========================
 
 
 def wrap_desc(s: str) -> str:
@@ -171,7 +171,6 @@ def mk_props(**overrides) -> Dict[str, bool]:
     return p
 
 
-# --- AI System Cards ---
 CARDS_AI: List[Card] = [
     Card(
         id="ai_chatbot",
@@ -329,7 +328,6 @@ CARDS_AI: List[Card] = [
 ]
 
 
-# --- Non-AI System Cards ---
 CARDS_NON_AI: List[Card] = [
     Card(
         id="na_excel",
@@ -427,7 +425,7 @@ CARDS_NON_AI: List[Card] = [
             "Input: Sales from the past week. "
             "How it works: Takes the average of items sold per day. "
             "Objective: Estimate how many items will be sold tomorrow. "
-            "Output: A single number prediction."
+            "Output: a single number prediction."
         ),
         props=mk_props(
             rules_only=True,
@@ -449,7 +447,7 @@ CARDS_NON_AI: List[Card] = [
             "Input: Records of past support tickets. "
             "How it works: Calculates the average time it took to close them. "
             "Objective: Predict how long new tickets will take. "
-            "Output: An estimated resolution time."
+            "Output: an estimated resolution time."
         ),
         props=mk_props(
             rules_only=True,
@@ -470,25 +468,19 @@ ALL_CARDS: List[Card] = CARDS_AI + CARDS_NON_AI
 CARDS_BY_ID: Dict[str, Card] = {c.id: c for c in ALL_CARDS}
 
 # =========================
-# Helpers & game logic
+# Helpers
 # =========================
 
 
 def parse_card_sections(desc: str) -> Dict[str, str]:
-    """
-    Parse 'Input:', 'How it works:', 'Objective:', 'Output:' into sections
-    for nicer display. Falls back gracefully if not found.
-    """
+    """Parse Input/How it works/Objective/Output sections for pretty display."""
     sections = {"Input": "", "How it works": "", "Objective": "", "Output": ""}
-    for key in sections.keys():
-        sections[key] = ""
-
     pattern = r"(Input|How it works|Objective|Output):"
     parts = re.split(pattern, desc)
     current = None
-    buf = []
+    buf: List[str] = []
     for part in parts:
-        if part in ("Input", "How it works", "Objective", "Output"):
+        if part in sections.keys():
             if current and buf:
                 sections[current] = " ".join(buf).strip()
             current = part
@@ -497,70 +489,42 @@ def parse_card_sections(desc: str) -> Dict[str, str]:
             buf.append(part)
     if current and buf:
         sections[current] = " ".join(buf).strip()
-
     for k, v in sections.items():
         sections[k] = v.strip()
     return sections
 
 
-def reset_game(random_draw: bool = True, chosen_card_id: Optional[str] = None):
-    card = random.choice(ALL_CARDS) if random_draw else CARDS_BY_ID[chosen_card_id]
-    st.session_state.game = {
-        "card_id": card.id,
-        "asked": [],
-        "neutrals_used": 0,
-        "completed": False,
-        "final_guess": None,
-        "player_points": None,
-        "per_q_correct": None,
-        "computer_guess_correct": None,
-    }
+def get_true_answer(card: Card, q: Question) -> str:
+    return "yes" if bool(card.props.get(q.prop, False)) else "no"
 
 
-def normalize_answer(ans: str) -> str:
-    return ans.strip().lower()
-
-
-def indicator_label_to_weight(lbl: str) -> int:
+def indicator_weight(lbl: str) -> int:
     return INDICATOR_WEIGHTS.get(lbl, 0)
 
 
-def compute_final_guess(asked: List[Tuple[str, str, str]]) -> str:
-    has_def_ai = any(lbl == "def_ai" for _, _, lbl in asked)
-    has_def_not_ai = any(lbl == "def_not_ai" for _, _, lbl in asked)
+def compute_final_guess_from_indicators(
+    asked_triplets: List[Tuple[str, str, str]]
+) -> str:
+    """Used in Mode A (Computer guesses)."""
+    has_def_ai = any(lbl == "def_ai" for _, _, lbl in asked_triplets)
+    has_def_not_ai = any(lbl == "def_not_ai" for _, _, lbl in asked_triplets)
     if has_def_ai and not has_def_not_ai:
         return "ai"
     if has_def_not_ai and not has_def_ai:
         return "not_ai"
     if has_def_ai and has_def_not_ai:
         return "cannot_guess"
-    score = sum(indicator_label_to_weight(lbl) for _, _, lbl in asked)
+    score = sum(indicator_weight(lbl) for _, _, lbl in asked_triplets)
     if score > 0:
         return "ai"
-    elif score < 0:
+    if score < 0:
         return "not_ai"
-    else:
-        return "cannot_guess"
-
-
-def get_true_answer(card: Card, q: Question) -> str:
-    val = bool(card.props.get(q.prop, False))
-    return "yes" if val else "no"
-
-
-def score_player_answers(card: Card, asked: List[Tuple[str, str, str]]) -> Tuple[int, List[bool]]:
-    total = 0
-    correctness = []
-    for q_id, ans, _ in asked:
-        q = next(q for q in QUESTIONS if q.id == q_id)
-        truth = get_true_answer(card, q)
-        correct = normalize_answer(ans) == truth
-        correctness.append(correct)
-        total += 2 if correct else -1
-    return total, correctness
+    return "cannot_guess"
 
 
 def next_question_candidate(asked_ids: set) -> Optional[Question]:
+    """Heuristic for Mode A (Computer chooses)."""
+
     def priority(q: Question) -> int:
         vals = set(q.indicators.values())
         if "def_ai" in vals or "def_not_ai" in vals:
@@ -576,186 +540,369 @@ def next_question_candidate(asked_ids: set) -> Optional[Question]:
     return candidates[0]
 
 
-# ==============
+def reset_game(mode: str, pick_card_id: Optional[str] = None):
+    """mode: 'computer_guesses' | 'you_guess'"""
+    card = CARDS_BY_ID[pick_card_id] if pick_card_id else random.choice(ALL_CARDS)
+    st.session_state.game = {
+        "mode": mode,
+        "card_id": card.id,
+        # Common
+        "asked": [],  # Mode A: (q_id, player_ans, indicator); Mode B: (q_id, comp_ans, indicator)
+        "completed": False,
+        # Mode A only
+        "neutrals_used": 0,
+        "final_guess": None,  # 'ai' | 'not_ai' | 'cannot_guess' (Mode A)
+        "player_points": None,
+        "per_q_correct": None,
+        "computer_guess_correct": None,
+        # Mode B only
+        "user_final_guess": None,  # 'ai' | 'not_ai'
+        "user_guess_correct": None,
+    }
+
+
+# =========================
 # Streamlit UI
-# ==============
+# =========================
 
 
 st.set_page_config(page_title="AI Guess Who", page_icon="🃏", layout="centered")
 st.title("🃏 AI Guess Who")
 
-# Initialize session
+# --- Sidebar: Mode & new game ---
+with st.sidebar:
+    st.header("Mode & Setup")
+    mode = st.radio(
+        "Choose game mode",
+        options=["Computer guesses (app asks)", "You guess (you ask)"],
+        index=0,
+        help="Switch between roles: either the app tries to guess your card, or you try to guess the app’s hidden card.",
+    )
+    mode_key = "computer_guesses" if mode.startswith("Computer") else "you_guess"
+
+    pick_method = st.radio("Card selection", ["Random draw", "Pick card"], horizontal=True)
+    chosen_id = None
+    if pick_method == "Pick card":
+        # Do not leak AI/Non-AI in labels
+        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
+        sel = st.selectbox("Choose a card", options=options)
+        chosen_id = sel.split("|")[-1]
+
+    if st.button("Start new game", type="primary", use_container_width=True):
+        reset_game(mode_key, chosen_id)
+        st.rerun()
+
+# Initialize state
 if "game" not in st.session_state:
-    reset_game(random_draw=True)
+    reset_game("computer_guesses")
 
 game = st.session_state.game
 current_card = CARDS_BY_ID[game["card_id"]]
 
-# ---- Card details (ALWAYS visible, without revealing AI / Non-AI) ----
-st.subheader("🪪 Your Card")
-secs = parse_card_sections(current_card.description)
+# =========================
+# MODE A — Computer guesses
+# =========================
+if game["mode"] == "computer_guesses":
+    st.subheader("🪪 Your Card")
+    secs = parse_card_sections(current_card.description)
+    with st.container(border=True):
+        st.markdown(f"### {current_card.name}")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("**Input**")
+            st.write(secs.get("Input", ""))
+            st.markdown("**Objective**")
+            st.write(secs.get("Objective", ""))
+        with c2:
+            st.markdown("**How it works**")
+            st.write(secs.get("How it works", ""))
+            st.markdown("**Output**")
+            st.write(secs.get("Output", ""))
 
-with st.container(border=True):
-    st.markdown(f"### {current_card.name}")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("**Input**")
-        st.write(secs.get("Input", ""))
-        st.markdown("**Objective**")
-        st.write(secs.get("Objective", ""))
-    with col2:
-        st.markdown("**How it works**")
-        st.write(secs.get("How it works", ""))
-        st.markdown("**Output**")
-        st.write(secs.get("Output", ""))
+    with st.expander("Optional: technical properties (for advanced players)"):
+        st.code(current_card.props, language="python")
 
-st.caption(
-    "You know the card and what it does—but not whether it's an AI system. The Computer will try to guess using yes/no questions."
-)
-
-st.divider()
-
-# ---- Sidebar: New game / picking without revealing AI/Non-AI in labels ----
-with st.sidebar:
-    st.header("New game")
-    pick_method = st.radio("Card selection", ["Random draw", "Pick card"], horizontal=True)
-    chosen_id = None
-    if pick_method == "Pick card":
-        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
-        sel = st.selectbox("Choose a card to hold", options=options)
-        chosen_id = sel.split("|")[-1]
-    if st.button("Start new game", type="primary", use_container_width=True):
-        reset_game(
-            random_draw=(pick_method == "Random draw"),
-            chosen_card_id=chosen_id or random.choice(ALL_CARDS).id,
-        )
-        st.rerun()
-
-# ---- Progress ----
-asked_records: List[Tuple[str, str, str]] = game["asked"]
-st.progress(len(asked_records) / MAX_QUESTIONS, text=f"Questions asked: {len(asked_records)} / {MAX_QUESTIONS}")
-
-# ---- Ask next question ----
-can_ask_more = (len(asked_records) < MAX_QUESTIONS) and (not game["completed"])
-
-if can_ask_more:
-    q = next_question_candidate({q_id for (q_id, _, _) in asked_records})
-    if q is None:
-        game["completed"] = True
-        st.rerun()
-
-    st.subheader("🤖 Computer asks")
-    st.write(q.text)
-    with st.form(f"form_{q.id}", clear_on_submit=True):
-        ans = st.radio("Your answer", options=["Yes", "No"], index=0, horizontal=True)
-        submitted = st.form_submit_button("Submit answer")
-    if submitted:
-        norm = "yes" if ans.lower().startswith("y") else "no"
-        indicator_label = q.indicators.get(norm, "neutral")
-
-        if indicator_label == "neutral":
-            game["neutrals_used"] += 1
-        game["asked"].append((q.id, norm, indicator_label))
-
-        if len(game["asked"]) >= MAX_QUESTIONS:
-            game["completed"] = True
-        st.rerun()
-
-# ---- Asked so far ----
-if asked_records:
-    st.subheader("📋 Q&A so far")
-    for idx, (q_id, ans, lbl) in enumerate(asked_records, start=1):
-        q_obj = next(q for q in QUESTIONS if q.id == q_id)
-        weight = INDICATOR_WEIGHTS[lbl]
-        label_text = {
-            "def_ai": "Definitive: AI",
-            "def_not_ai": "Definitive: Not AI",
-            "ai_ind": "AI indicator",
-            "not_ai_ind": "Not-AI indicator",
-            "neutral": "Neutral",
-        }[lbl]
-        st.markdown(
-            f"**Q{idx}.** {q_obj.text}\n\n" f"• **Answer:** {ans.capitalize()}  \n" f"• **Indicator:** {label_text} (weight {weight})"
-        )
-
-# ---- Final guess & scoring ----
-if game["completed"]:
-    if game["final_guess"] is None:
-        game["final_guess"] = compute_final_guess(game["asked"])
-
-    st.divider()
-    st.subheader("🎯 Computer’s final guess")
-    guess = game["final_guess"]
-    if guess == "ai":
-        st.success("**This is an AI system.**")
-    elif guess == "not_ai":
-        st.error("**This is not an AI system.**")
-    else:
-        st.info("**I cannot guess based on your answers.**")
-
-    with st.expander("How this guess was made", expanded=False):
-        score = sum(INDICATOR_WEIGHTS[lbl] for _, _, lbl in game["asked"])
-        st.write(f"Aggregate score: **{score}**")
-        st.write(f"Definitive AI present: **{any(lbl=='def_ai' for _,_,lbl in game['asked'])}**")
-        st.write(f"Definitive Not-AI present: **{any(lbl=='def_not_ai' for _,_,lbl in game['asked'])}**")
-        st.write(f"Neutral answers used: **{game['neutrals_used']}** / {MAX_NEUTRALS}")
-
-    current_card = CARDS_BY_ID[game["card_id"]]
-    if guess == "ai":
-        comp_correct = current_card.is_ai_system
-    elif guess == "not_ai":
-        comp_correct = not current_card.is_ai_system
-    else:
-        comp_correct = None
-
-    if comp_correct is True:
-        st.success("**Computer guess correctness:** Correct (per Winning rules, the player wins).")
-    elif comp_correct is False:
-        st.error("**Computer guess correctness:** Incorrect (per Winning rules, the player loses).")
-    else:
-        st.info("**Computer guess correctness:** Not applicable (no guess).")
-
-    if game["player_points"] is None or game["per_q_correct"] is None:
-        pts, corr = score_player_answers(current_card, game["asked"])
-        game["player_points"] = pts
-        game["per_q_correct"] = corr
-
-    st.markdown("**Per-question truth table:**")
-    for i, (q_id, ans, _lbl) in enumerate(game["asked"], start=1):
-        q_obj = next(q for q in QUESTIONS if q.id == q_id)
-        truth = get_true_answer(current_card, q_obj)
-        correct = game["per_q_correct"][i - 1]
-        if correct:
-            st.write(
-                f"Q{i}: ✅ Your answer **{ans.capitalize()}** matches truth **{truth.capitalize()}**"
-            )
-        else:
-            st.write(
-                f"Q{i}: ❌ Your answer **{ans.capitalize()}** was wrong; truth is **{truth.capitalize()}**"
-            )
-
-    st.markdown(
-        f"**Scoring system:** +2 per correct, −1 per incorrect  \n**Your points:** **{game['player_points']}**"
+    st.caption(
+        "You know the card details—but not whether it’s an AI system. The Computer will try to guess using yes/no questions."
     )
 
+    # Progress
+    asked_records: List[Tuple[str, str, str]] = game["asked"]
+    st.progress(
+        len(asked_records) / MAX_QUESTIONS,
+        text=f"Questions asked: {len(asked_records)} / {MAX_QUESTIONS}",
+    )
+
+    # Ask next (computer chooses)
+    can_ask_more = (len(asked_records) < MAX_QUESTIONS) and (not game["completed"])
+    if can_ask_more:
+        q = next_question_candidate({qid for (qid, _, _) in asked_records})
+        if q is None:
+            game["completed"] = True
+            st.rerun()
+
+        st.subheader("🤖 Computer asks")
+        st.write(q.text)
+        with st.form(f"form_{q.id}", clear_on_submit=True):
+            ans = st.radio("Your answer", ["Yes", "No"], index=0, horizontal=True)
+            submitted = st.form_submit_button("Submit answer")
+        if submitted:
+            norm = "yes" if ans.lower().startswith("y") else "no"
+            indicator_label = q.indicators.get(norm, "neutral")
+            if indicator_label == "neutral":
+                game["neutrals_used"] += 1
+                if game["neutrals_used"] > MAX_NEUTRALS:
+                    st.warning(
+                        "Neutral limit exceeded; future neutral answers won’t be prioritized."
+                    )
+            game["asked"].append((q.id, norm, indicator_label))
+            if len(game["asked"]) >= MAX_QUESTIONS:
+                game["completed"] = True
+            st.rerun()
+
+    # Q&A so far
+    if asked_records:
+        st.subheader("📋 Q&A so far")
+        for idx, (q_id, ans, lbl) in enumerate(asked_records, start=1):
+            q_obj = next(q for q in QUESTIONS if q.id == q_id)
+            weight = INDICATOR_WEIGHTS[lbl]
+            label_text = {
+                "def_ai": "Definitive: AI",
+                "def_not_ai": "Definitive: Not AI",
+                "ai_ind": "AI indicator",
+                "not_ai_ind": "Not-AI indicator",
+                "neutral": "Neutral",
+            }[lbl]
+            st.markdown(
+                f"**Q{idx}.** {q_obj.text}\n\n"
+                f"• **Answer:** {ans.capitalize()}  \n"
+                f"• **Indicator:** {label_text} (weight {weight})"
+            )
+
+    # Finalization
+    if game["completed"]:
+        if game["final_guess"] is None:
+            game["final_guess"] = compute_final_guess_from_indicators(game["asked"])
+
+        st.divider()
+        st.subheader("🎯 Computer’s final guess")
+        guess = game["final_guess"]
+        if guess == "ai":
+            st.success("**This is an AI system.**")
+        elif guess == "not_ai":
+            st.error("**This is not an AI system.**")
+        else:
+            st.info("**I cannot guess based on your answers.**")
+
+        with st.expander("How this guess was made"):
+            score = sum(INDICATOR_WEIGHTS[lbl] for _, _, lbl in game["asked"])
+            st.write(f"Aggregate score: **{score}**")
+            st.write(
+                f"Definitive AI present: **{any(lbl=='def_ai' for _,_,lbl in game['asked'])}**"
+            )
+            st.write(
+                f"Definitive Not-AI present: **{any(lbl=='def_not_ai' for _,_,lbl in game['asked'])}**"
+            )
+            st.write(
+                f"Neutral answers used: **{game['neutrals_used']}** / {MAX_NEUTRALS}"
+            )
+
+        # Reveal correctness against hidden label
+        comp_correct = None
+        if guess == "ai":
+            comp_correct = current_card.is_ai_system
+        elif guess == "not_ai":
+            comp_correct = (not current_card.is_ai_system)
+        else:
+            comp_correct = None
+
+        if comp_correct is True:
+            st.success("**Computer guess correctness:** Correct → Player wins.")
+        elif comp_correct is False:
+            st.error("**Computer guess correctness:** Incorrect → Player loses.")
+        else:
+            st.info("**Computer guess correctness:** Not applicable (no guess).")
+
+        # Player answer accuracy & points
+        if game["player_points"] is None or game["per_q_correct"] is None:
+            total = 0
+            correctness = []
+            for (q_id, ans, _lbl) in game["asked"]:
+                q = next(q for q in QUESTIONS if q.id == q_id)
+                truth = get_true_answer(current_card, q)
+                correct = (ans == truth)
+                correctness.append(correct)
+                total += 2 if correct else -1
+            game["player_points"] = total
+            game["per_q_correct"] = correctness
+
+        st.markdown("**Per-question truth table:**")
+        for i, (q_id, ans, _lbl) in enumerate(game["asked"], start=1):
+            q_obj = next(q for q in QUESTIONS if q.id == q_id)
+            truth = get_true_answer(current_card, q_obj)
+            correct = game["per_q_correct"][i - 1]
+            if correct:
+                st.write(
+                    f"Q{i}: ✅ Your answer **{ans.capitalize()}** matches truth **{truth.capitalize()}**"
+                )
+            else:
+                st.write(
+                    f"Q{i}: ❌ Your answer **{ans.capitalize()}** was wrong; truth is **{truth.capitalize()}**"
+                )
+
+        st.markdown(
+            f"**Scoring:** +2 per correct, −1 per incorrect  \n**Your points:** **{game['player_points']}**"
+        )
+
+        st.divider()
+        st.subheader("🔁 Play again")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("New random game"):
+                reset_game(game["mode"])
+                st.rerun()
+        with col2:
+            options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
+            sel = st.selectbox("Or pick specific card", options=options, key="again_pick_a")
+            chosen = sel.split("|")[-1]
+            if st.button("Start with chosen card"):
+                reset_game(game["mode"], chosen)
+                st.rerun()
+
+# =========================
+# MODE B — You guess
+# =========================
+else:
+    st.subheader("🎴 Hidden Card")
+    st.info(
+        "The computer is holding a card. Ask up to **5** questions from the list (or guess earlier)."
+    )
+
+    # Progress
+    asked_records: List[Tuple[str, str, str]] = game["asked"]  # (q_id, comp_ans_yes_no, indicator)
+    st.progress(
+        len(asked_records) / MAX_QUESTIONS,
+        text=f"Questions asked: {len(asked_records)} / {MAX_QUESTIONS}",
+    )
+
+    # Ask a question (you choose)
+    can_ask_more = (
+        (len(asked_records) < MAX_QUESTIONS)
+        and (not game["completed"])
+        and (game["user_final_guess"] is None)
+    )
+    remaining = [
+        q
+        for q in QUESTIONS
+        if q.id not in {qid for (qid, _, _) in asked_records}
+    ]
+    if can_ask_more and remaining:
+        st.subheader("🗣️ Ask a question")
+        q_labels = [f"{q.text} | {q.id}" for q in remaining]
+        picked = st.selectbox(
+            "Choose a question to ask:", options=q_labels, key="you_pick_q"
+        )
+        selected_id = picked.split("|")[-1]
+        selected_q = next(q for q in QUESTIONS if q.id == selected_id)
+
+        if st.button("Ask this question", type="primary"):
+            # Computer answers truthfully
+            ans = get_true_answer(current_card, selected_q)  # 'yes' / 'no'
+            indicator_label = selected_q.indicators.get(ans, "neutral")
+            game["asked"].append((selected_q.id, ans, indicator_label))
+            st.success(f"Computer answers: **{ans.capitalize()}**")
+            if len(game["asked"]) >= MAX_QUESTIONS:
+                st.info("You've reached the maximum number of questions. Please make your final guess.")
+            st.rerun()
+
+    # Show Q&A so far (no indicator hints needed, but we can show them post-round)
+    if asked_records:
+        st.subheader("📋 Q&A so far")
+        for idx, (q_id, ans, _lbl) in enumerate(asked_records, start=1):
+            q_obj = next(q for q in QUESTIONS if q.id == q_id)
+            st.markdown(f"**Q{idx}.** {q_obj.text}  \n• **Answer:** {ans.capitalize()}")
+
+    # Guess controls (enabled anytime)
     st.divider()
-    st.subheader("🔁 Play again")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("New random game"):
-            reset_game(random_draw=True)
+    st.subheader("🎯 Your guess")
+    c1, c2, c3 = st.columns([1, 1, 2])
+    with c1:
+        if st.button("Guess: AI system"):
+            game["user_final_guess"] = "ai"
+            game["completed"] = True
             st.rerun()
-    with col2:
-        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
-        sel = st.selectbox("Or pick specific card", options=options, key="again_pick")
-        chosen = sel.split("|")[-1]
-        if st.button("Start with chosen card"):
-            reset_game(random_draw=False, chosen_card_id=chosen)
+    with c2:
+        if st.button("Guess: Not AI"):
+            game["user_final_guess"] = "not_ai"
+            game["completed"] = True
             st.rerun()
+    with c3:
+        st.caption("You can guess at any time before or at 5 questions.")
+
+    # Reveal & outcome
+    if game["completed"] and game["user_final_guess"] is not None:
+        st.divider()
+        st.subheader("🪪 Reveal")
+        truth_is_ai = current_card.is_ai_system
+        your_guess_ai = game["user_final_guess"] == "ai"
+        game["user_guess_correct"] = truth_is_ai == your_guess_ai
+
+        if game["user_guess_correct"]:
+            st.success("**Correct!** 🎉")
+        else:
+            st.error("**Incorrect.**")
+
+        # Reveal the held card & details now
+        secs = parse_card_sections(current_card.description)
+        with st.container(border=True):
+            st.markdown(
+                f"### {current_card.name} — {'AI System' if truth_is_ai else 'Non-AI System'}"
+            )
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown("**Input**")
+                st.write(secs.get("Input", ""))
+                st.markdown("**Objective**")
+                st.write(secs.get("Objective", ""))
+            with c2:
+                st.markdown("**How it works**")
+                st.write(secs.get("How it works", ""))
+                st.markdown("**Output**")
+                st.write(secs.get("Output", ""))
+
+        with st.expander("Post-game: indicators for each answer (for learning)"):
+            for idx, (q_id, ans, lbl) in enumerate(game["asked"], start=1):
+                q_obj = next(q for q in QUESTIONS if q.id == q_id)
+                label_text = {
+                    "def_ai": "Definitive: AI",
+                    "def_not_ai": "Definitive: Not AI",
+                    "ai_ind": "AI indicator",
+                    "not_ai_ind": "Not-AI indicator",
+                    "neutral": "Neutral",
+                }[lbl]
+                st.write(
+                    f"Q{idx}: {q_obj.text} → {ans.capitalize()}  —  {label_text}"
+                )
+
+        st.divider()
+        st.subheader("🔁 Play again")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("New random game"):
+                reset_game(game["mode"])
+                st.rerun()
+        with col2:
+            options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
+            sel = st.selectbox("Or pick specific card", options=options, key="again_pick_b")
+            chosen = sel.split("|")[-1]
+            if st.button("Start with chosen card"):
+                reset_game(game["mode"], chosen)
+                st.rerun()
 
 # Footer
 st.markdown("---")
 st.caption(
-    "Card details are always visible to the player, but the AI/Non-AI label remains hidden until after the Computer’s guess."
+    "Mode A: You see the card details; the app asks up to 5 questions and guesses.  \n"
+    "Mode B: The app hides the card; you ask up to 5 questions and must guess AI vs Not AI at any time."
 )
 
