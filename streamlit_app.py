@@ -46,7 +46,7 @@ QUESTIONS: List[Question] = [
     Question(
         "inf_rules_only",
         "Does it work following only human-programmed rules?",
-        {"yes": "not_ai_ind", "no": "def_not_ai"},
+        {"yes": "def_not_ai", "no": "ai_ind"},
         "rules_only",
     ),
     Question(
@@ -98,7 +98,7 @@ QUESTIONS: List[Question] = [
     Question(
         "auton_full_autonomy",
         "Does it act with full autonomy, making decisions that directly affect the world without human review?",
-        {"yes": "ai_ind", "no": "def_not_ai"},
+        {"yes": "ai_ind", "no": "not_ai_ind"},
         "acts_full_autonomy",
     ),
     Question(
