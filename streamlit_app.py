@@ -802,7 +802,7 @@ else:
         picked = st.selectbox(
             "Choose a question to ask:", options=q_labels, key="you_pick_q"
         )
-        selected_id = picked.split("|")[-1]
+        selected_id = picked.split("|")[-1].strip()
         selected_q = next(q for q in QUESTIONS if q.id == selected_id)
 
         if st.button("Ask this question", type="primary"):
