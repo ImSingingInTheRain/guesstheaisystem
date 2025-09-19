@@ -37,6 +37,66 @@ QUESTION_STATUS_STYLES = {
     "no": {"bg": "#fee2e2", "border": "#fecaca", "text": "#991b1b"},
 }
 
+QUESTION_ICONS: Dict[str, str] = {
+    "inf_input": "📥",
+    "inf_rules_only": "📜",
+    "inf_output": "📤",
+    "inf_influence": "🌐",
+    "out_predicts": "🔮",
+    "out_creates_content": "🎨",
+    "out_recommends": "🤝",
+    "out_takes_decisions": "⚙️",
+    "auton_can_do_on_own": "🚀",
+    "auton_full_autonomy": "🤖",
+    "auton_limited": "🕹️",
+    "auton_non_autonomous": "🧭",
+    "adapt_never_changes": "🧱",
+    "adapt_online_learns": "📈",
+}
+
+INDICATOR_DETAILS: Dict[str, Dict[str, str]] = {
+    "def_ai": {
+        "title": "Strong AI evidence",
+        "description": "This answer makes it very clear the hidden card describes an AI system.",
+        "bg": "#e0f2fe",
+        "border": "#bae6fd",
+        "text": "#0c4a6e",
+        "icon": "💡",
+    },
+    "def_not_ai": {
+        "title": "Strong NOT-AI evidence",
+        "description": "This answer strongly signals the system is not AI-driven.",
+        "bg": "#fee2e2",
+        "border": "#fecaca",
+        "text": "#7f1d1d",
+        "icon": "⛔",
+    },
+    "ai_ind": {
+        "title": "Leaning toward AI",
+        "description": "This answer suggests the card likely represents an AI system, though more clues help.",
+        "bg": "#ecfdf5",
+        "border": "#bbf7d0",
+        "text": "#065f46",
+        "icon": "🤖",
+    },
+    "not_ai_ind": {
+        "title": "Leaning toward NOT-AI",
+        "description": "This answer leans toward the system not being AI, but it's not definitive.",
+        "bg": "#fef3c7",
+        "border": "#fde68a",
+        "text": "#92400e",
+        "icon": "🧩",
+    },
+    "neutral": {
+        "title": "Neutral clue",
+        "description": "Both AI and non-AI systems commonly share this trait.",
+        "bg": "#f1f5f9",
+        "border": "#e2e8f0",
+        "text": "#1e293b",
+        "icon": "⚖️",
+    },
+}
+
 # =========================
 # Questions (as specified)
 # =========================
@@ -650,14 +710,18 @@ st.markdown(
     button[data-testid="baseButton-secondary"] {
         background: linear-gradient(135deg, #ffffff, #f5f7fb);
         border: 1px solid rgba(15, 23, 42, 0.12);
-        border-radius: 0.9rem;
+        border-radius: 0.95rem;
         box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-        padding: 1.2rem 1rem;
+        padding: 1.15rem 1.2rem;
         text-align: left;
         white-space: normal;
-        line-height: 1.4;
+        line-height: 1.45;
         font-weight: 600;
         color: #0e1117;
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        font-size: 0.98rem;
     }
     button[data-testid="baseButton-secondary"]:hover {
         border-color: rgba(59, 130, 246, 0.55);
@@ -666,6 +730,86 @@ st.markdown(
     button[data-testid="baseButton-secondary"]:focus {
         outline: 2px solid rgba(59, 130, 246, 0.45);
         outline-offset: 2px;
+    }
+    .question-card {
+        background: var(--q-bg, #ffffff);
+        border: 1px solid var(--q-border, rgba(148, 163, 184, 0.45));
+        border-left: 5px solid var(--q-border, rgba(148, 163, 184, 0.45));
+        border-radius: 1.05rem;
+        padding: 1rem 1.2rem;
+        display: flex;
+        gap: 0.9rem;
+        align-items: flex-start;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+        margin-bottom: 1rem;
+    }
+    .question-card__icon {
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+    .question-card__title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.45;
+    }
+    .question-card__answer {
+        margin-top: 0.45rem;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #1e293b;
+    }
+    .question-card__answer span {
+        background: rgba(255, 255, 255, 0.55);
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-left: 0.35rem;
+    }
+    .indicator-card {
+        border-radius: 1rem;
+        padding: 1rem 1.15rem;
+        margin-bottom: 0.9rem;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .indicator-card__header {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+    .indicator-card__icon {
+        font-size: 1.35rem;
+        line-height: 1;
+    }
+    .indicator-card__title {
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.4;
+        font-size: 0.98rem;
+    }
+    .indicator-card__answer {
+        font-size: 0.92rem;
+        color: #334155;
+        margin-top: 0.3rem;
+    }
+    .indicator-card__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        padding: 0.2rem 0.65rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-top: 0.6rem;
+    }
+    .indicator-card__description {
+        margin-top: 0.45rem;
+        font-size: 0.88rem;
+        color: #475569;
+        line-height: 1.5;
     }
     </style>
     """,
@@ -734,22 +878,25 @@ if remaining or asked_records:
                 )
                 label = "Yes" if ans == "yes" else "No"
                 question_text_html = html.escape(question.text).replace("\n", "<br>")
+                icon = QUESTION_ICONS.get(question.id, "❓")
                 st.markdown(
                     f"""
-                    <div style="background:{style['bg']};border:1px solid {style['border']};
-                                border-radius:0.85rem;padding:1rem;font-weight:600;
-                                line-height:1.4;color:{style['text']};">
-                        {question_text_html}
-                        <div style="margin-top:0.65rem;font-size:0.9rem;font-weight:500;">
-                            Answer: {label}
+                    <div class="question-card" style="--q-bg:{style['bg']};--q-border:{style['border']};">
+                        <div class="question-card__icon">{icon}</div>
+                        <div class="question-card__body">
+                            <div class="question-card__title">{question_text_html}</div>
+                            <div class="question-card__answer" style="color:{style['text']};">
+                                Computer answered<span>{label}</span>
+                            </div>
                         </div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
             else:
+                icon = QUESTION_ICONS.get(question.id, "❓")
                 pressed = st.button(
-                    question.text,
+                    f"{icon}  {question.text}",
                     key=f"q_btn_{question.id}",
                     type="secondary",
                     use_container_width=True,
@@ -815,17 +962,39 @@ if game["completed"] and game["user_final_guess"] is not None:
             st.markdown("**Output**")
             st.write(secs.get("Output", ""))
 
-    with st.expander("Post-game: indicators for each answer"):
+    with st.expander("Find out what each question reveals about the system"):
+        st.markdown(
+            "Review how each answer guided your deduction, and see which clues were decisive.",
+        )
         for idx, (q_id, ans, lbl) in enumerate(game["asked"], start=1):
             q_obj = next(q for q in QUESTIONS if q.id == q_id)
-            label_text = {
-                "def_ai": "Clearly indicates this is an AI system",
-                "def_not_ai": "Clearly indicates this is NOT an AI system",
-                "ai_ind": "It suggests this is an AI system, but a certain answer would require more information",
-                "not_ai_ind": "It suggests this is NOT an AI system, but a certain answer would require more information",
-                "neutral": "Both AI and not-AI systems can have this property",
-            }[lbl]
-            st.write(f"Q{idx}: {q_obj.text} → {ans.capitalize()} — {label_text}")
+            indicator = INDICATOR_DETAILS.get(lbl, INDICATOR_DETAILS["neutral"])
+            question_text_html = html.escape(q_obj.text).replace("\n", "<br>")
+            answer_label = "Yes" if ans == "yes" else "No"
+            question_icon = QUESTION_ICONS.get(q_id, "❓")
+            badge_icon = indicator.get("icon", "ℹ️")
+            description_html = html.escape(indicator["description"])
+            st.markdown(
+                f"""
+                <div class="indicator-card" style="background:{indicator['bg']};border-color:{indicator['border']};">
+                    <div class="indicator-card__header">
+                        <div class="indicator-card__icon">{question_icon}</div>
+                        <div>
+                            <div class="indicator-card__title">Q{idx}. {question_text_html}</div>
+                            <div class="indicator-card__answer">Answer: <strong>{answer_label}</strong></div>
+                        </div>
+                    </div>
+                    <div class="indicator-card__badge" style="color:{indicator['text']};border:1px solid {indicator['border']};background: rgba(255, 255, 255, 0.7);">
+                        <span>{badge_icon}</span>
+                        <span>{indicator['title']}</span>
+                    </div>
+                    <div class="indicator-card__description" style="color:{indicator['text']};">
+                        {description_html}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     st.divider()
     st.subheader("🔁 Play again")
