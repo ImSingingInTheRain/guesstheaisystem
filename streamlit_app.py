@@ -57,7 +57,7 @@ QUESTION_ICONS: Dict[str, str] = {
 INDICATOR_DETAILS: Dict[str, Dict[str, str]] = {
     "def_ai": {
         "title": "Strong AI evidence",
-        "description": "This answer makes it very clear the hidden card describes an AI system.",
+        "description": "This answer makes it very clear the card describes an AI system.",
         "bg": "#e0f2fe",
         "border": "#bae6fd",
         "text": "#0c4a6e",
@@ -688,7 +688,7 @@ st.title("🕵️  AI Guess Who?")
 # --- Sidebar: new game ---
 with st.sidebar:
     st.header("New game")
-    st.caption("Draw a new hidden card to challenge yourself again.")
+    st.caption("Draw a new card to challenge yourself again.")
     pick_method = st.radio("Card selection", ["Random draw", "Pick card"], horizontal=True)
     chosen_id = None
     if pick_method == "Pick card":
@@ -1110,7 +1110,7 @@ remaining = [
 if remaining or asked_records:
     st.subheader("🗣️ Ask a question")
     if remaining and can_ask_more:
-        st.caption("Select a card to ask the computer about the hidden system.")
+        st.caption("Select a card to ask the computer about the system.")
     elif remaining:
         st.caption("Question limit reached. Review your asked cards below.")
     else:
@@ -1202,7 +1202,7 @@ if game["completed"] and game["user_final_guess"] is not None:
                 <div class=\"reveal-result__icon\">🎉</div>
                 <div>
                     <div class=\"reveal-result__title\">Correct!</div>
-                    <div class=\"reveal-result__message\">Great deduction — you correctly identified the hidden card as {actual_type_text}.</div>
+                    <div class=\"reveal-result__message\">Great deduction — you correctly identified the card as {actual_type_text}.</div>
                 </div>
             </div>
             """
@@ -1326,6 +1326,6 @@ if game["completed"] and game["user_final_guess"] is not None:
 
 st.markdown("---")
 st.caption(
-    "Ask smart questions, track the answers, and decide whether the hidden card describes an AI system."
+    "Ask smart questions, track the answers, and decide whether the card describes an AI system."
 )
 
