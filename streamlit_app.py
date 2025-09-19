@@ -682,7 +682,7 @@ def reset_game(pick_card_id: Optional[str] = None):
 # =========================
 
 
-st.set_page_config(page_title="AI Guess Who", page_icon="🃏", layout="centered")
+st.set_page_config(page_title="AI Guess Who?", page_icon="🃏", layout="centered")
 st.title("🃏 AI Guess Who")
 
 # --- Sidebar: new game ---
@@ -1027,7 +1027,7 @@ with st.expander("Remind me the key characteristics of an AI system"):
                 <div class="ai-key-info__content">
                     <div class="ai-key-info__title">AI systems have various levels of autonomy</div>
                     <p class="ai-key-info__text">
-                        Some are fully autonomous, while most require human oversight but can move forward without new instructions at every step.
+                        Some are fully autonomous, but most require humans to take decision and can only recommend, predict or generate content.
                     </p>
                 </div>
             </div>
