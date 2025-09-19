@@ -612,7 +612,6 @@ def reset_game(pick_card_id: Optional[str] = None):
         "user_final_guess": None,  # 'ai' | 'not_ai'
         "user_guess_correct": None,
     }
-    st.session_state.pop("last_answer_feedback", None)
 
 
 # =========================
@@ -699,13 +698,6 @@ with st.container(border=True):
         unsafe_allow_html=True,
     )
 
-feedback = st.session_state.pop("last_answer_feedback", None)
-if feedback:
-    st.success(f"Computer answers: **{feedback['answer'].capitalize()}**")
-    st.caption(f"Question: {feedback['question']}")
-    if feedback.get("limit_reached"):
-        st.info("You've reached the maximum number of questions. Make your final guess below.")
-
 asked_records: List[Tuple[str, str, str]] = game["asked"]
 st.progress(
     len(asked_records) / MAX_QUESTIONS,
@@ -768,21 +760,10 @@ if remaining or asked_records:
                     ans = get_true_answer(current_card, question)
                     indicator_label = question.indicators.get(ans, "neutral")
                     game["asked"].append((question.id, ans, indicator_label))
-                    st.session_state.last_answer_feedback = {
-                        "answer": ans,
-                        "question": question.text,
-                        "limit_reached": len(game["asked"]) >= MAX_QUESTIONS,
-                    }
                     st.rerun()
 
 elif not remaining and not game["completed"] and game["user_final_guess"] is None:
     st.info("You've asked every question. It's time to make your final guess!")
-
-if asked_records:
-    st.subheader("📋 Q&A so far")
-    for idx, (q_id, ans, _lbl) in enumerate(asked_records, start=1):
-        q_obj = next(q for q in QUESTIONS if q.id == q_id)
-        st.markdown(f"**Q{idx}.** {q_obj.text}  \n• **Answer:** {ans.capitalize()}")
 
 st.divider()
 st.subheader("🎯 Your guess")
