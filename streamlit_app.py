@@ -853,6 +853,63 @@ st.markdown(
         line-height: 1.65;
         color: #1e293b;
     }
+    div[data-testid="stExpander"] > details {
+        border-radius: 1rem;
+        border: 1px solid rgba(59, 130, 246, 0.18);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0));
+        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    div[data-testid="stExpander"] > details[open] {
+        border-color: rgba(37, 99, 235, 0.35);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.02));
+    }
+    div[data-testid="stExpander"] > details summary {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1d4ed8;
+    }
+    .ai-key-info {
+        display: grid;
+        gap: 1rem;
+        margin-top: 0.8rem;
+    }
+    @media (min-width: 768px) {
+        .ai-key-info {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    .ai-key-info__box {
+        background: #ffffff;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        padding: 1.1rem 1.2rem;
+        display: flex;
+        gap: 0.85rem;
+        align-items: flex-start;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+    .ai-key-info__content {
+        flex: 1;
+    }
+    .ai-key-info__icon {
+        font-size: 1.8rem;
+        line-height: 1;
+        filter: drop-shadow(0 6px 12px rgba(59, 130, 246, 0.25));
+    }
+    .ai-key-info__title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.4rem;
+    }
+    .ai-key-info__text {
+        margin: 0;
+        font-size: 0.93rem;
+        line-height: 1.55;
+        color: #334155;
+    }
     .reveal-card {
         background: #ffffff;
         border: 1px solid rgba(148, 163, 184, 0.35);
@@ -951,6 +1008,33 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+with st.expander("Remind me the key characteristics of an AI system"):
+    st.markdown(
+        """
+        <div class="ai-key-info">
+            <div class="ai-key-info__box">
+                <div class="ai-key-info__icon">🧠</div>
+                <div class="ai-key-info__content">
+                    <div class="ai-key-info__title">AI systems perform inference</div>
+                    <p class="ai-key-info__text">
+                        They receive input data and use AI models to generate outputs that achieve one or more objectives.
+                    </p>
+                </div>
+            </div>
+            <div class="ai-key-info__box">
+                <div class="ai-key-info__icon">🧭</div>
+                <div class="ai-key-info__content">
+                    <div class="ai-key-info__title">AI systems have various levels of autonomy</div>
+                    <p class="ai-key-info__text">
+                        Some are fully autonomous, while most require human oversight but can move forward without new instructions at every step.
+                    </p>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 asked_records: List[Tuple[str, str, str]] = game["asked"]
 st.progress(
