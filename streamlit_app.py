@@ -235,10 +235,10 @@ CARDS_AI: List[Card] = [
         name="Chatbot",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: A text message asking to summarize a document. "
-            "How it works: learned from millions of texts, images, videos, audio how to answer questions. "
-            "Objective: Predict how to respond and generate human-like content. "
-            "Output: A written summary of the document."
+            "Input: Detailed user prompts and any documents or snippets they want summarized. "
+            "How it works: A large language model trained on diverse texts reasons over the prompt to identify key themes and supporting details. "
+            "Objective: Produce an accurate, friendly response that distills the material into an easy-to-read summary. "
+            "Output: Polished written paragraphs capturing the main points of the source material."
         ),
         summary=wrap_desc(
             "This system answers user inquiries by summarizing documents based on text messages. "
@@ -267,10 +267,10 @@ CARDS_AI: List[Card] = [
         name="Spam Filter",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Incoming email (subject, sender, body text). "
-            "How it works: when developed it is shown thousands of emails labeled as spam or not spam. "
-            "Objective: Predict whether a message is spam. "
-            "Output: the incoming email goes to inbox or spam folder."
+            "Input: Incoming email metadata such as sender, subject line, body text, and embedded links. "
+            "How it works: A supervised model compares each message against patterns learned from thousands of labeled spam and safe emails. "
+            "Objective: Judge the likelihood that the message is unwanted or malicious. "
+            "Output: Automatically routes the email into the inbox or spam folder with an optional warning flag."
         ),
         summary=wrap_desc(
             "This system assesses incoming emails by analyzing their subject, sender, and body content. "
@@ -298,10 +298,10 @@ CARDS_AI: List[Card] = [
         name="Drug Discovery System",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Molecular structures and chemical properties. "
-            "How it works: a model learned how to identify molecular patterns. "
-            "Objective: Predict which molecules act like known drugs. "
-            "Output: a list of potential drug candidates."
+            "Input: Molecular structures, chemical descriptors, and lab screening results. "
+            "How it works: It analyzes structure–activity relationships learned from prior experiments to spot promising molecular motifs. "
+            "Objective: Prioritize compounds that behave like effective drugs and warrant further testing. "
+            "Output: Ranked shortlists of candidate molecules with scores or annotations."
         ),
         summary=wrap_desc(
             "This tool helps identify potential drug candidates by analyzing molecular structures and chemical "
@@ -330,10 +330,10 @@ CARDS_AI: List[Card] = [
         name="Personalized Recommendation System",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: a person’s browsing history, searches, clicks, viewing habits. "
-            "How it works: it updates recommendations based on how a person behaves online. "
-            "Objective: Predict what content/products are most relevant. "
-            "Output: suggests items tailored to the user."
+            "Input: Browsing activity, search history, ratings, and recent purchases for each person. "
+            "How it works: Collaborative and content-based algorithms update preference profiles as people interact with content. "
+            "Objective: Surface items the user is most likely to enjoy or act on next. "
+            "Output: Dynamic recommendation carousels, emails, or notifications tailored to the individual."
         ),
         summary=wrap_desc(
             "This service tailors suggestions for content or products by tracking a user's online behavior, "
@@ -361,10 +361,10 @@ CARDS_AI: List[Card] = [
         name="Voice-to-Text Assistant",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Spoken audio from user. "
-            "How it works: it is developed to understand which typed characters represent a sound. "
-            "Objective: Convert speech into text. "
-            "Output: transcribed text."
+            "Input: Real-time or recorded speech audio from the user. "
+            "How it works: A speech recognition model converts acoustic signals into phonemes and maps them to words using language modeling. "
+            "Objective: Transcribe spoken language accurately with punctuation and casing. "
+            "Output: Editable text transcripts ready for messaging, captioning, or note taking."
         ),
         summary=wrap_desc(
             "This tool converts spoken audio into written text by interpreting the sounds of human speech. "
@@ -392,10 +392,10 @@ CARDS_AI: List[Card] = [
         name="Image Classifier",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Photo uploaded by user. "
-            "How it works: Trained on millions of images. "
-            "Objective: Categorize object(s) in the photo. "
-            "Output: classify what is in the picture."
+            "Input: Digital images uploaded or captured by the user. "
+            "How it works: A convolutional neural network detects visual patterns learned from millions of labeled photos. "
+            "Objective: Determine the most probable category or labels for the objects in view. "
+            "Output: Predicted classes and confidence scores describing the image."
         ),
         summary=wrap_desc(
             "This application analyzes uploaded photos to categorize the objects within them."
@@ -423,10 +423,10 @@ CARDS_AI: List[Card] = [
         name="Job Applicant Screening Tool",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Candidate CVs and application details. "
-            "How it works: developed using past hiring outcomes to learn which candidate characteristics are a good fit. "
-            "Objective: Predict candidate–job match. "
-            "Output: ranked candidates / fit score."
+            "Input: Candidate résumés, application responses, and defined job requirements. "
+            "How it works: Models compare applicant attributes against historical hiring data and competency criteria. "
+            "Objective: Highlight applicants who best match the role while flagging potential risks. "
+            "Output: Ranked candidate lists, fit scores, and notes for recruiters."
         ),
         summary=wrap_desc(
             "This system evaluates candidate applications by examining CVs and related details. It utilizes "
@@ -459,10 +459,10 @@ CARDS_NON_AI: List[Card] = [
         name="Excel Spreadsheet",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Numbers typed into a sheet. "
-            "How it works: Uses formulas or filters written by the user. "
-            "Objective: Add, subtract, sort, or calculate. "
-            "Output: A table or chart with the requested result."
+            "Input: Numbers, labels, and formulas typed into worksheet cells. "
+            "How it works: Built-in spreadsheet functions perform arithmetic and sorting exactly as configured. "
+            "Objective: Organize data and calculate totals or analyses requested by the user. "
+            "Output: Updated tables, charts, or cell values reflecting the entered formulas."
         ),
         summary=wrap_desc(
             "This tool allows users to input numerical data into a structured sheet where they can perform "
@@ -485,10 +485,10 @@ CARDS_NON_AI: List[Card] = [
         name="Database Search",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: A request like 'find all customers who bought something last month'. "
-            "How it works: Follows the search rules exactly as written. "
-            "Objective: Retrieve matching entries. "
-            "Output: A list of results from the database."
+            "Input: Structured queries specifying filters, fields, and sorting rules. "
+            "How it works: The database engine executes the query literally against indexed tables without adapting the logic. "
+            "Objective: Retrieve records that match the specified conditions. "
+            "Output: A list or table of rows returned by the query."
         ),
         summary=wrap_desc(
             "This system retrieves specific data from a database by processing straightforward inquiries. "
@@ -511,10 +511,10 @@ CARDS_NON_AI: List[Card] = [
         name="Sales Dashboard",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Sales records (region, product, date). "
-            "How it works: Uses built-in formulas to add up totals and averages. "
-            "Objective: Show how much was sold, where, and when. "
-            "Output: Charts and graphs."
+            "Input: Transaction records including region, product, quantity, revenue, and dates. "
+            "How it works: Predefined aggregations and charts total the data and refresh visuals when new records load. "
+            "Objective: Present sales performance trends for quick review. "
+            "Output: Interactive charts, KPIs, and summary tables driven by the formulas."
         ),
         summary=wrap_desc(
             "This tool compiles and analyzes sales data, displaying totals and averages through built-in "
@@ -537,10 +537,10 @@ CARDS_NON_AI: List[Card] = [
         name="Survey Summary Tool",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Responses from a questionnaire. "
-            "How it works: Counts answers and applies simple statistics. "
-            "Objective: Summarize opinions or satisfaction levels. "
-            "Output: Percentages and scores."
+            "Input: Completed survey responses collected from participants. "
+            "How it works: Deterministic routines count selections, average ratings, and compute simple statistics. "
+            "Objective: Describe overall sentiment or satisfaction levels without interpretation. "
+            "Output: Percentages, mean scores, and basic tables ready for reports."
         ),
         summary=wrap_desc(
             "This system summarizes feedback from questionnaires by counting answers and calculating basic "
@@ -563,10 +563,10 @@ CARDS_NON_AI: List[Card] = [
         name="Inventory Forecaster",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Sales from the past week. "
-            "How it works: Takes the average of items sold per day. "
-            "Objective: Estimate how many items will be sold tomorrow. "
-            "Output: a single number prediction."
+            "Input: Historical daily sales quantities for each item. "
+            "How it works: Calculates a rolling average of recent activity using fixed business rules without adapting over time. "
+            "Objective: Estimate the next day's demand to guide restocking. "
+            "Output: A single numeric forecast per item."
         ),
         summary=wrap_desc(
             "This tool uses historical sales data to estimate future sales activity. It calculates average daily sales to produce a numerical prediction for items expected to be sold on the following day."
@@ -588,10 +588,10 @@ CARDS_NON_AI: List[Card] = [
         name="Customer Service Time Estimator",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Records of past support tickets. "
-            "How it works: Calculates the average time it took to close them. "
-            "Objective: Predict how long new tickets will take. "
-            "Output: an estimated resolution time."
+            "Input: Past support ticket timestamps such as creation, assignment, and resolution times. "
+            "How it works: Applies formula-based averages and optionally adds fixed buffers to represent workload. "
+            "Objective: Provide expectations for how long new tickets may remain open. "
+            "Output: An estimated resolution time communicated to customers or agents."
         ),
         summary=wrap_desc(
             "This tool analyzes past support inquiry records to approximate the expected time for resolving new "
@@ -811,6 +811,117 @@ st.markdown(
         color: #475569;
         line-height: 1.5;
     }
+    .system-overview-card {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0));
+        border: 1px solid rgba(59, 130, 246, 0.18);
+        border-radius: 1.1rem;
+        padding: 1.3rem 1.4rem;
+        display: flex;
+        gap: 1.05rem;
+        align-items: flex-start;
+        box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+        margin-bottom: 1.5rem;
+    }
+    .system-overview-card__icon {
+        font-size: 2.35rem;
+        line-height: 1;
+        filter: drop-shadow(0 6px 12px rgba(37, 99, 235, 0.25));
+    }
+    .system-overview-card__body {
+        flex: 1;
+    }
+    .system-overview-card__eyebrow {
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #475569;
+        font-weight: 600;
+    }
+    .system-overview-card__title {
+        font-size: 1.55rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-top: 0.3rem;
+    }
+    .system-overview-card__summary {
+        margin-top: 0.75rem;
+        font-size: 1rem;
+        line-height: 1.65;
+        color: #1e293b;
+    }
+    .reveal-card {
+        background: #ffffff;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 1.2rem;
+        padding: 1.4rem;
+        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.09);
+        margin-top: 1rem;
+    }
+    .reveal-card__header {
+        display: flex;
+        gap: 1.1rem;
+        align-items: center;
+        margin-bottom: 1.2rem;
+    }
+    .reveal-card__icon {
+        font-size: 2.1rem;
+        line-height: 1;
+    }
+    .reveal-card__title {
+        font-size: 1.45rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .reveal-card__type {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        margin-top: 0.35rem;
+        border: 1px solid transparent;
+    }
+    .reveal-card__type--ai {
+        background: rgba(59, 130, 246, 0.12);
+        color: #1d4ed8;
+        border-color: rgba(59, 130, 246, 0.45);
+    }
+    .reveal-card__type--not-ai {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        border-color: rgba(16, 185, 129, 0.45);
+    }
+    .reveal-card__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.1rem;
+    }
+    .reveal-card__section {
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(226, 232, 240, 0.6));
+        border-radius: 0.95rem;
+        padding: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .reveal-card__section-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: #0f172a;
+        text-transform: uppercase;
+    }
+    .reveal-card__section-body {
+        margin-top: 0.45rem;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        color: #1e293b;
+    }
+    .reveal-card__empty {
+        color: #94a3b8;
+        font-style: italic;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -821,25 +932,21 @@ st.write(
     "Ask up to **five** yes/no questions, then decide whether the card below describes an AI system."
 )
 
-with st.container(border=True):
-    st.markdown(
-        "<div style='font-size:0.9rem;text-transform:uppercase;letter-spacing:0.08em;"
-        "color:#475569;font-weight:600;'>System overview</div>",
-        unsafe_allow_html=True,
-    )
-    icon = CARD_ICONS.get(current_card.id, "🧠")
-    st.markdown(
-        f"<div style='display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;"
-        f"font-size:1.6rem;font-weight:700;color:#0f172a;'><span>{icon}</span>"
-        f"<span>{html.escape(current_card.name)}</span></div>",
-        unsafe_allow_html=True,
-    )
-    summary_html = html.escape(current_card.summary).replace("\n", "<br>")
-    st.markdown(
-        "<div style='margin-top:0.6rem;font-size:1rem;line-height:1.6;color:#0f172a;'>"
-        f"<span style='font-weight:600;'>Description:</span> {summary_html}</div>",
-        unsafe_allow_html=True,
-    )
+icon = CARD_ICONS.get(current_card.id, "🧠")
+summary_html = html.escape(current_card.summary).replace("\n", "<br>")
+st.markdown(
+    f"""
+    <div class="system-overview-card">
+        <div class="system-overview-card__icon">{icon}</div>
+        <div class="system-overview-card__body">
+            <div class="system-overview-card__eyebrow">System overview</div>
+            <div class="system-overview-card__title">{html.escape(current_card.name)}</div>
+            <div class="system-overview-card__summary">{summary_html}</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 asked_records: List[Tuple[str, str, str]] = game["asked"]
 st.progress(
@@ -946,21 +1053,48 @@ if game["completed"] and game["user_final_guess"] is not None:
         st.error("**Incorrect.**")
 
     secs = parse_card_sections(current_card.description)
-    with st.container(border=True):
-        st.markdown(
-            f"### {current_card.name} — {'AI System' if truth_is_ai else 'Non-AI System'}"
+    reveal_icon = CARD_ICONS.get(current_card.id, "🧠")
+    type_class = "ai" if truth_is_ai else "not-ai"
+    type_label = "🤖 AI system" if truth_is_ai else "🧰 Non-AI tool"
+    section_order = [
+        ("Input", "🔌"),
+        ("Objective", "🎯"),
+        ("How it works", "⚙️"),
+        ("Output", "📤"),
+    ]
+    section_html_parts: List[str] = []
+    for section_name, emoji in section_order:
+        copy = secs.get(section_name, "")
+        if copy:
+            formatted = html.escape(copy).replace("\n", "<br>")
+        else:
+            formatted = "<span class='reveal-card__empty'>No details provided.</span>"
+        section_html_parts.append(
+            f"""
+            <div class=\"reveal-card__section\">
+                <div class=\"reveal-card__section-label\">{emoji} {section_name}</div>
+                <div class=\"reveal-card__section-body\">{formatted}</div>
+            </div>
+            """
         )
-        c1, c2 = st.columns(2)
-        with c1:
-            st.markdown("**Input**")
-            st.write(secs.get("Input", ""))
-            st.markdown("**Objective**")
-            st.write(secs.get("Objective", ""))
-        with c2:
-            st.markdown("**How it works**")
-            st.write(secs.get("How it works", ""))
-            st.markdown("**Output**")
-            st.write(secs.get("Output", ""))
+    sections_html = "\n".join(section_html_parts)
+    st.markdown(
+        f"""
+        <div class=\"reveal-card\">
+            <div class=\"reveal-card__header\">
+                <div class=\"reveal-card__icon\">{reveal_icon}</div>
+                <div>
+                    <div class=\"reveal-card__title\">{html.escape(current_card.name)}</div>
+                    <div class=\"reveal-card__type reveal-card__type--{type_class}\">{type_label}</div>
+                </div>
+            </div>
+            <div class=\"reveal-card__grid\">
+                {sections_html}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.expander("Find out what each question reveals about the system"):
         st.markdown(
