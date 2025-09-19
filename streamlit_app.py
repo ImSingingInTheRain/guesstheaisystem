@@ -176,20 +176,24 @@ CARDS_AI: List[Card] = [
         ),
         summary=wrap_desc(
             "This system answers user inquiries by summarizing documents based on text messages. "
-            "It has been trained on a vast range of information to create human-like responses, ultimately "
+            "It has been developed using a vast range of information to create human-like responses, ultimately "
             "delivering a concise written summary."
         ),
         props=mk_props(
-            predicts=True,
-            creates_content=True,
-            recommends=False,
-            takes_decisions_direct=False,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            non_autonomous=False,
-            never_changes=False,
-            adapts_online=False,
-            rules_only=False,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": True,
+        "recommends": False,
+        "takes_decisions_direct": False,
+        "can_do_on_own": True,
+        "acts_full_autonomy": False,
+        "limited_autonomy": True,
+        "non_autonomous": False,
+        "never_changes": True,
+        "adapts_online": False,
         ),
     ),
     Card(
@@ -204,21 +208,23 @@ CARDS_AI: List[Card] = [
         ),
         summary=wrap_desc(
             "This system assesses incoming emails by analyzing their subject, sender, and body content. "
-            "It has learned from a collection of emails labeled as spam or not to determine the nature of new "
-            "messages, sorting them into the inbox or spam folder accordingly."
+            "It sorts emails into the inbox or spam folder."
         ),
         props=mk_props(
-            predicts=True,
-            creates_content=False,
-            recommends=False,
-            takes_decisions_direct=True,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            non_autonomous=False,
-            never_changes=False,
-            adapts_online=False,
-            rules_only=False,
-            influences=True,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": False,
+        "recommends": False,
+        "takes_decisions_direct": True,
+        "can_do_on_own": True,
+        "acts_full_autonomy": True,
+        "limited_autonomy": False,
+        "non_autonomous": False,
+        "never_changes": True,
+        "adapts_online": False,
         ),
     ),
     Card(
@@ -237,14 +243,20 @@ CARDS_AI: List[Card] = [
             "to established drugs."
         ),
         props=mk_props(
-            predicts=True,
-            takes_decisions_direct=False,
-            creates_content=False,
-            recommends=True,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            adapts_online=False,
-            rules_only=False,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": False,
+        "recommends": True,
+        "takes_decisions_direct": False,
+        "can_do_on_own": True,
+        "acts_full_autonomy": False,
+        "limited_autonomy": True,
+        "non_autonomous": False,
+        "never_changes": True,
+        "adapts_online": False,
         ),
     ),
     Card(
@@ -259,18 +271,23 @@ CARDS_AI: List[Card] = [
         ),
         summary=wrap_desc(
             "This service tailors suggestions for content or products by tracking a user's online behavior, "
-            "such as browsing history and viewing habits. It continuously updates recommendations to provide "
-            "items most relevant to the user's interests."
+            "such as browsing history and viewing habits."
         ),
         props=mk_props(
-            predicts=True,
-            recommends=True,
-            takes_decisions_direct=False,
-            creates_content=False,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            adapts_online=True,
-            rules_only=False,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": False,
+        "recommends": True,
+        "takes_decisions_direct": False,
+        "can_do_on_own": True,
+        "acts_full_autonomy": False,
+        "limited_autonomy": True,
+        "non_autonomous": False,
+        "never_changes": False,
+        "adapts_online": True,
         ),
     ),
     Card(
@@ -288,14 +305,20 @@ CARDS_AI: List[Card] = [
             "It facilitates communication by transcribing what is said into a clear text format."
         ),
         props=mk_props(
-            predicts=True,
-            creates_content=False,
-            recommends=False,
-            takes_decisions_direct=False,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            adapts_online=False,
-            rules_only=False,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": True,
+        "recommends": False,
+        "takes_decisions_direct": False,
+        "can_do_on_own": True,
+        "acts_full_autonomy": False,
+        "limited_autonomy": True,
+        "non_autonomous": False,
+        "never_changes": True,
+        "adapts_online": False,
         ),
     ),
     Card(
@@ -309,19 +332,24 @@ CARDS_AI: List[Card] = [
             "Output: classify what is in the picture."
         ),
         summary=wrap_desc(
-            "This application analyzes uploaded photos to categorize the objects within them. It is trained on "
-            "a large dataset of images, enabling it to classify pictures accurately, for instance, determining "
-            "if an image features a dog or a cat."
+            "This application analyzes uploaded photos to categorize the objects within them."
+            "It classifies pictures accurately, for instance, suggesting if an image features a dog or a cat."
         ),
         props=mk_props(
-            predicts=True,
-            creates_content=False,
-            recommends=False,
-            takes_decisions_direct=False,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            adapts_online=False,
-            rules_only=False,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": False,
+        "recommends": True,
+        "takes_decisions_direct": False,
+        "can_do_on_own": True,
+        "acts_full_autonomy": False,
+        "limited_autonomy": True,
+        "non_autonomous": False,
+        "never_changes": True,
+        "adapts_online": False,
         ),
     ),
     Card(
@@ -336,19 +364,24 @@ CARDS_AI: List[Card] = [
         ),
         summary=wrap_desc(
             "This system evaluates candidate applications by examining CVs and related details. It utilizes "
-            "historical hiring data to predict which candidates are the best fits for job positions, assisting "
+            "historical hiring data to suggest which candidates are the best fits for job positions, assisting "
             "in the selection process."
         ),
         props=mk_props(
-            predicts=True,
-            recommends=True,
-            takes_decisions_direct=False,
-            creates_content=False,
-            can_do_on_own=True,
-            limited_autonomy=True,
-            adapts_online=False,
-            rules_only=False,
-            influences=True,
+        "receives_input": True,
+        "rules_only": False,
+        "generates_output": True,
+        "influences": True,
+        "predicts": True,
+        "creates_content": False,
+        "recommends": True,
+        "takes_decisions_direct": False,
+        "can_do_on_own": True,
+        "acts_full_autonomy": False,
+        "limited_autonomy": True,
+        "non_autonomous": False,
+        "never_changes": True,
+        "adapts_online": False,
         ),
     ),
 ]
@@ -621,7 +654,7 @@ st.markdown(
 
 st.subheader("🕵️ Guess the hidden system")
 st.write(
-    "Ask up to **five** yes/no questions, then decide whether the concealed card describes an AI system."
+    "Ask up to **five** yes/no questions, then decide whether the card below describes an AI system."
 )
 
 with st.container(border=True):
