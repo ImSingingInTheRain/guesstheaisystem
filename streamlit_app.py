@@ -89,7 +89,7 @@ INDICATOR_DETAILS: Dict[str, Dict[str, str]] = {
     },
     "neutral": {
         "title": "Neutral clue",
-        "description": "Both AI and non-AI systems commonly can share this trait.",
+        "description": "Both AI and non-AI systems can share this trait.",
         "bg": "#f1f5f9",
         "border": "#e2e8f0",
         "text": "#1e293b",
