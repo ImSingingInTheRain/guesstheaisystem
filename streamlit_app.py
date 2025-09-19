@@ -1052,6 +1052,82 @@ st.markdown(
         color: #94a3b8;
         font-style: italic;
     }
+    .sticky-disclaimer {
+        position: fixed;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        max-width: min(90vw, 720px);
+    }
+    .sticky-disclaimer__toggle {
+        display: none;
+    }
+    .sticky-disclaimer__shell {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        background: rgba(15, 23, 42, 0.94);
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 1rem;
+        padding: 1rem 1.2rem;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.32);
+        color: #f8fafc;
+        backdrop-filter: blur(8px);
+    }
+    .sticky-disclaimer__icon {
+        font-size: 1.4rem;
+        line-height: 1;
+        filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.35));
+        margin-top: 0.05rem;
+    }
+    .sticky-disclaimer__text {
+        margin: 0;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+    .sticky-disclaimer__close {
+        margin-left: auto;
+        background: rgba(248, 250, 252, 0.12);
+        border-radius: 999px;
+        border: 1px solid rgba(248, 250, 252, 0.35);
+        color: #f8fafc;
+        width: 1.9rem;
+        height: 1.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .sticky-disclaimer__close:hover,
+    .sticky-disclaimer__close:focus,
+    .sticky-disclaimer__close:focus-visible {
+        background: rgba(248, 250, 252, 0.25);
+        color: #ffffff;
+        transform: translateY(-1px);
+        outline: 2px solid rgba(248, 250, 252, 0.45);
+        outline-offset: 2px;
+    }
+    .sticky-disclaimer__toggle:checked + .sticky-disclaimer__shell {
+        display: none;
+    }
+    @media (max-width: 640px) {
+        .sticky-disclaimer__shell {
+            border-radius: 0.85rem;
+            padding: 0.85rem 0.95rem;
+            gap: 0.6rem;
+        }
+        .sticky-disclaimer__text {
+            font-size: 0.88rem;
+        }
+        .sticky-disclaimer__close {
+            width: 1.7rem;
+            height: 1.7rem;
+            font-size: 1.05rem;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -1455,5 +1531,19 @@ if game["completed"] and game["user_final_guess"] is not None:
 st.markdown("---")
 st.caption(
     "Ask smart questions, track the answers, and decide whether the card describes an AI system."
+)
+
+st.markdown(
+    """
+    <div class="sticky-disclaimer">
+        <input type="checkbox" id="ai-disclaimer-toggle" class="sticky-disclaimer__toggle" />
+        <div class="sticky-disclaimer__shell" role="status" aria-live="polite">
+            <div class="sticky-disclaimer__icon">ℹ️</div>
+            <p class="sticky-disclaimer__text">Please note that some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Always remember to label AI-generated content when sharing it.</p>
+            <label for="ai-disclaimer-toggle" class="sticky-disclaimer__close" role="button" tabindex="0" aria-label="Dismiss disclaimer">×</label>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
