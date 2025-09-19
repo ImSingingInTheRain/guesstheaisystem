@@ -682,8 +682,8 @@ def reset_game(pick_card_id: Optional[str] = None):
 # =========================
 
 
-st.set_page_config(page_title="AI Guess Who?", page_icon="🃏", layout="centered")
-st.title("🃏 AI Guess Who?")
+st.set_page_config(page_title="AI Guess Who?", page_icon="🕵️", layout="centered")
+st.title("🕵️  AI Guess Who?")
 
 # --- Sidebar: new game ---
 with st.sidebar:
@@ -988,7 +988,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.subheader("🕵️ Can you guess if this is an AI system?")
+st.subheader("Can you guess if this is an AI system?")
 st.write(
     "Ask up to **five** yes/no questions, then decide whether the card below describes an AI system."
 )
