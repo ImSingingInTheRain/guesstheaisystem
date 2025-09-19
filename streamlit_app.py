@@ -1054,11 +1054,12 @@ st.markdown(
     }
     .sticky-disclaimer {
         position: fixed;
-        bottom: 1.25rem;
-        left: 50%;
-        transform: translateX(-50%);
+
+        bottom: 0.85rem;
+        right: 1.25rem;
         z-index: 999;
-        max-width: min(90vw, 720px);
+        max-width: min(92vw, 420px);
+
     }
     .sticky-disclaimer__toggle {
         display: none;
@@ -1066,38 +1067,40 @@ st.markdown(
     .sticky-disclaimer__shell {
         display: flex;
         align-items: flex-start;
-        gap: 0.75rem;
-        background: rgba(15, 23, 42, 0.94);
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        border-radius: 1rem;
-        padding: 1rem 1.2rem;
-        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.32);
+
+        gap: 0.55rem;
+        background: rgba(15, 23, 42, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 0.75rem;
+        padding: 0.75rem 0.85rem;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
         color: #f8fafc;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(6px);
     }
     .sticky-disclaimer__icon {
-        font-size: 1.4rem;
+        font-size: 1.1rem;
         line-height: 1;
-        filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.35));
-        margin-top: 0.05rem;
+        filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.25));
+        margin-top: 0.1rem;
     }
     .sticky-disclaimer__text {
         margin: 0;
-        font-size: 0.92rem;
-        line-height: 1.55;
+        font-size: 0.85rem;
+        line-height: 1.45;
     }
     .sticky-disclaimer__close {
         margin-left: auto;
-        background: rgba(248, 250, 252, 0.12);
+        background: rgba(248, 250, 252, 0.08);
         border-radius: 999px;
-        border: 1px solid rgba(248, 250, 252, 0.35);
+        border: 1px solid rgba(248, 250, 252, 0.25);
         color: #f8fafc;
-        width: 1.9rem;
-        height: 1.9rem;
+        width: 1.6rem;
+        height: 1.6rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.05rem;
+
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
@@ -1115,17 +1118,19 @@ st.markdown(
     }
     @media (max-width: 640px) {
         .sticky-disclaimer__shell {
-            border-radius: 0.85rem;
-            padding: 0.85rem 0.95rem;
-            gap: 0.6rem;
+
+            border-radius: 0.65rem;
+            padding: 0.7rem 0.8rem;
+            gap: 0.5rem;
         }
         .sticky-disclaimer__text {
-            font-size: 0.88rem;
+            font-size: 0.82rem;
         }
         .sticky-disclaimer__close {
-            width: 1.7rem;
-            height: 1.7rem;
-            font-size: 1.05rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.95rem;
+
         }
     }
     </style>
