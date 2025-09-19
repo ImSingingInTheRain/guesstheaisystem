@@ -1,15 +1,13 @@
 import html
-import os
 import random
 import re
 import textwrap
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
-os.environ.setdefault("STREAMLIT_TELEMETRY", "0")
-os.environ.setdefault("STREAMLIT_BROWSER_GATHERUSAGESTATS", "false")
-
 import streamlit as st
+
+st.set_option("browser.gatherUsageStats", False)
 
 # =========================
 # Types & constants
