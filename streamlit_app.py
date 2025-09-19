@@ -910,6 +910,63 @@ st.markdown(
         line-height: 1.55;
         color: #334155;
     }
+    .reveal-result {
+        display: flex;
+        gap: 0.95rem;
+        align-items: flex-start;
+        background: #ffffff;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        padding: 1.15rem 1.25rem;
+        margin: 1rem 0 1.2rem;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    }
+    .reveal-result__icon {
+        font-size: 2.5rem;
+        line-height: 1;
+        filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18));
+    }
+    .reveal-result__title {
+        font-size: 1.18rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        color: #0f172a;
+    }
+    .reveal-result__message {
+        font-size: 0.96rem;
+        line-height: 1.6;
+        color: #1e293b;
+    }
+    .reveal-result__cta {
+        margin-top: 0.6rem;
+        font-size: 0.94rem;
+        font-weight: 600;
+        display: inline-flex;
+        gap: 0.3rem;
+        align-items: center;
+    }
+    .reveal-result__cta::after {
+        content: "→";
+        font-size: 1rem;
+    }
+    .reveal-result--correct {
+        background: linear-gradient(135deg, rgba(220, 252, 231, 0.85), rgba(187, 247, 208, 0.6));
+        border-color: rgba(34, 197, 94, 0.4);
+    }
+    .reveal-result--correct .reveal-result__title,
+    .reveal-result--correct .reveal-result__message,
+    .reveal-result--correct .reveal-result__cta {
+        color: #166534;
+    }
+    .reveal-result--incorrect {
+        background: linear-gradient(135deg, rgba(254, 226, 226, 0.85), rgba(254, 202, 202, 0.6));
+        border-color: rgba(248, 113, 113, 0.45);
+    }
+    .reveal-result--incorrect .reveal-result__title,
+    .reveal-result--incorrect .reveal-result__message,
+    .reveal-result--incorrect .reveal-result__cta {
+        color: #b91c1c;
+    }
     .reveal-card {
         background: #ffffff;
         border: 1px solid rgba(148, 163, 184, 0.35);
@@ -1135,10 +1192,36 @@ if game["completed"] and game["user_final_guess"] is not None:
     your_guess_ai = game["user_final_guess"] == "ai"
     game["user_guess_correct"] = truth_is_ai == your_guess_ai
 
+    actual_type_text = "an AI system" if truth_is_ai else "a non-AI tool"
+    guessed_type_text = "an AI system" if your_guess_ai else "a non-AI tool"
+
     if game["user_guess_correct"]:
-        st.success("**Correct!** 🎉")
+        result_html = textwrap.dedent(
+            f"""
+            <div class=\"reveal-result reveal-result--correct\">
+                <div class=\"reveal-result__icon\">🎉</div>
+                <div>
+                    <div class=\"reveal-result__title\">Correct!</div>
+                    <div class=\"reveal-result__message\">Great deduction — you correctly identified the hidden card as {actual_type_text}.</div>
+                </div>
+            </div>
+            """
+        ).strip()
     else:
-        st.error("**Incorrect.**")
+        result_html = textwrap.dedent(
+            f"""
+            <div class=\"reveal-result reveal-result--incorrect\">
+                <div class=\"reveal-result__icon\">😞</div>
+                <div>
+                    <div class=\"reveal-result__title\">Not quite...</div>
+                    <div class=\"reveal-result__message\">You guessed {guessed_type_text}, but the card is {actual_type_text}.</div>
+                    <div class=\"reveal-result__cta\">Give it another shot — grab a new card and try again!</div>
+                </div>
+            </div>
+            """
+        ).strip()
+
+    st.markdown(result_html, unsafe_allow_html=True)
 
     secs = parse_card_sections(current_card.description)
     reveal_icon = CARD_ICONS.get(current_card.id, "🧠")
