@@ -500,7 +500,7 @@ CARDS_NON_AI: List[Card] = [
     ),
     Card(
         id="na_inventory_forecaster",
-        name="Inventory Forecaster (Averaging)",
+        name="Inventory Forecaster",
         is_ai_system=False,
         description=wrap_desc(
             "Input: Sales from the past week. "
@@ -509,8 +509,7 @@ CARDS_NON_AI: List[Card] = [
             "Output: a single number prediction."
         ),
         summary=wrap_desc(
-            "This tool uses historical sales data to estimate future sales activity. It calculates average daily "
-            "sales to produce a numerical prediction for items expected to be sold on the following day."
+            "This tool uses historical sales data to estimate future sales activity. It calculates average daily sales to produce a numerical prediction for items expected to be sold on the following day."
         ),
         props=mk_props(
             rules_only=True,
