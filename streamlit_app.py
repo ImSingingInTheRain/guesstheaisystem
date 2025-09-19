@@ -1,3 +1,4 @@
+import html
 import random
 import re
 import textwrap
@@ -30,6 +31,11 @@ class Card:
 
 
 MAX_QUESTIONS = 5
+
+QUESTION_STATUS_STYLES = {
+    "yes": {"bg": "#dcfce7", "border": "#bbf7d0", "text": "#166534"},
+    "no": {"bg": "#fee2e2", "border": "#fecaca", "text": "#991b1b"},
+}
 
 # =========================
 # Questions (as specified)
@@ -550,6 +556,22 @@ CARDS_NON_AI: List[Card] = [
 ALL_CARDS: List[Card] = CARDS_AI + CARDS_NON_AI
 CARDS_BY_ID: Dict[str, Card] = {c.id: c for c in ALL_CARDS}
 
+CARD_ICONS: Dict[str, str] = {
+    "ai_chatbot": "💬",
+    "ai_spam_filter": "🚫📧",
+    "ai_drug_disc": "🧪",
+    "ai_reco": "🎯",
+    "ai_asr": "🎙️",
+    "ai_img_cls": "🖼️",
+    "ai_screen": "📋",
+    "na_excel": "📊",
+    "na_db_search": "🗄️",
+    "na_sales_dash": "📈",
+    "na_survey": "📝",
+    "na_inventory_forecaster": "📦",
+    "na_ticket_eta": "⏱️",
+}
+
 # =========================
 # Helpers
 # =========================
@@ -658,9 +680,24 @@ st.write(
 )
 
 with st.container(border=True):
-    st.markdown("#### System overview")
-    st.markdown(f"**{current_card.name}**")
-    st.write(current_card.summary)
+    st.markdown(
+        "<div style='font-size:0.9rem;text-transform:uppercase;letter-spacing:0.08em;"
+        "color:#475569;font-weight:600;'>System overview</div>",
+        unsafe_allow_html=True,
+    )
+    icon = CARD_ICONS.get(current_card.id, "🧠")
+    st.markdown(
+        f"<div style='display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;"
+        f"font-size:1.6rem;font-weight:700;color:#0f172a;'><span>{icon}</span>"
+        f"<span>{html.escape(current_card.name)}</span></div>",
+        unsafe_allow_html=True,
+    )
+    summary_html = html.escape(current_card.summary).replace("\n", "<br>")
+    st.markdown(
+        "<div style='margin-top:0.6rem;font-size:1rem;line-height:1.6;color:#0f172a;'>"
+        f"<span style='font-weight:600;'>Description:</span> {summary_html}</div>",
+        unsafe_allow_html=True,
+    )
 
 feedback = st.session_state.pop("last_answer_feedback", None)
 if feedback:
@@ -683,30 +720,61 @@ can_ask_more = (
 remaining = [
     q for q in QUESTIONS if q.id not in {qid for (qid, _, _) in asked_records}
 ]
-if can_ask_more and remaining:
+if remaining or asked_records:
     st.subheader("🗣️ Ask a question")
-    st.caption("Select a card to ask the computer about the hidden system.")
-    num_cols = 2 if len(remaining) > 1 else 1
+    if remaining and can_ask_more:
+        st.caption("Select a card to ask the computer about the hidden system.")
+    elif remaining:
+        st.caption("Question limit reached. Review your asked cards below.")
+    else:
+        st.caption("You've asked every available question.")
+
+    num_cols = 2 if len(QUESTIONS) > 1 else 1
     cols = st.columns(num_cols, gap="large")
-    for idx, question in enumerate(remaining):
+    asked_lookup = {qid: ans for (qid, ans, _lbl) in asked_records}
+
+    for idx, question in enumerate(QUESTIONS):
         target_col = cols[idx % num_cols]
         with target_col:
-            pressed = st.button(
-                question.text,
-                key=f"q_btn_{question.id}",
-                type="secondary",
-                use_container_width=True,
-            )
-        if pressed:
-            ans = get_true_answer(current_card, question)
-            indicator_label = question.indicators.get(ans, "neutral")
-            game["asked"].append((question.id, ans, indicator_label))
-            st.session_state.last_answer_feedback = {
-                "answer": ans,
-                "question": question.text,
-                "limit_reached": len(game["asked"]) >= MAX_QUESTIONS,
-            }
-            st.rerun()
+            ans = asked_lookup.get(question.id)
+            if ans:
+                style = QUESTION_STATUS_STYLES.get(
+                    ans, {"bg": "#f1f5f9", "border": "#e2e8f0", "text": "#0f172a"}
+                )
+                label = "Yes" if ans == "yes" else "No"
+                question_text_html = html.escape(question.text).replace("\n", "<br>")
+                st.markdown(
+                    f"""
+                    <div style="background:{style['bg']};border:1px solid {style['border']};
+                                border-radius:0.85rem;padding:1rem;font-weight:600;
+                                line-height:1.4;color:{style['text']};">
+                        {question_text_html}
+                        <div style="margin-top:0.65rem;font-size:0.9rem;font-weight:500;">
+                            Answer: {label}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                pressed = st.button(
+                    question.text,
+                    key=f"q_btn_{question.id}",
+                    type="secondary",
+                    use_container_width=True,
+                    disabled=not can_ask_more,
+                )
+                if pressed and can_ask_more:
+                    ans = get_true_answer(current_card, question)
+                    indicator_label = question.indicators.get(ans, "neutral")
+                    game["asked"].append((question.id, ans, indicator_label))
+                    st.session_state.last_answer_feedback = {
+                        "answer": ans,
+                        "question": question.text,
+                        "limit_reached": len(game["asked"]) >= MAX_QUESTIONS,
+                    }
+                    st.rerun()
+
 elif not remaining and not game["completed"] and game["user_final_guess"] is None:
     st.info("You've asked every question. It's time to make your final guess!")
 
@@ -787,11 +855,14 @@ if game["completed"] and game["user_final_guess"] is not None:
             reset_game()
             st.rerun()
     with col2:
-        options = [f"{c.name}|{c.id}" for c in ALL_CARDS]
-        sel = st.selectbox("Or pick specific card", options=options, key="again_pick")
-        chosen = sel.split("|")[-1]
+        sel = st.selectbox(
+            "Or pick specific card",
+            options=ALL_CARDS,
+            format_func=lambda c: c.name,
+            key="again_pick_card",
+        )
         if st.button("Start with chosen card", type="primary"):
-            reset_game(chosen)
+            reset_game(sel.id)
             st.rerun()
 
 st.markdown("---")
