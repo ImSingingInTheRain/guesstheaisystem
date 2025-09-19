@@ -1094,12 +1094,12 @@ st.markdown(
         border-radius: 999px;
         border: 1px solid rgba(248, 250, 252, 0.25);
         color: #f8fafc;
-        width: 1.6rem;
-        height: 1.6rem;
+        width: 2.15rem;
+        height: 2.15rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.05rem;
+        font-size: 1.35rem;
 
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
@@ -1127,9 +1127,9 @@ st.markdown(
             font-size: 0.82rem;
         }
         .sticky-disclaimer__close {
-            width: 1.5rem;
-            height: 1.5rem;
-            font-size: 0.95rem;
+            width: 1.9rem;
+            height: 1.9rem;
+            font-size: 1.2rem;
 
         }
     }
