@@ -946,7 +946,7 @@ st.markdown(
         align-items: center;
     }
     .reveal-result__cta::after {
-        content: "→";
+        content: ":)";
         font-size: 1rem;
     }
     .reveal-result--correct {
