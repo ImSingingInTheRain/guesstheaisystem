@@ -871,6 +871,17 @@ st.markdown(
         font-size: 1rem;
         color: #1d4ed8;
     }
+    .ai-key-info__note {
+        margin-top: 0.8rem;
+        background: rgba(59, 130, 246, 0.08);
+        border: 1px solid rgba(37, 99, 235, 0.25);
+        border-radius: 0.85rem;
+        padding: 0.85rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        color: #1d4ed8;
+        font-weight: 500;
+    }
     .ai-key-info {
         display: grid;
         gap: 1rem;
@@ -1070,6 +1081,7 @@ st.markdown(
 with st.expander("Remind me the key characteristics of an AI system"):
     st.markdown(
         """
+        <div class="ai-key-info__note">Note: this game adhere to the definition of AI system set by Article 3 of the EU AI Act</div>
         <div class="ai-key-info">
             <div class="ai-key-info__box">
                 <div class="ai-key-info__icon">🧠</div>
