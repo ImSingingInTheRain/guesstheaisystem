@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 # =========================
@@ -709,6 +710,9 @@ if "game" not in st.session_state:
 game = st.session_state.game
 current_card = CARDS_BY_ID[game["card_id"]]
 
+if "disclaimer_dismissed" not in st.session_state:
+    st.session_state.disclaimer_dismissed = False
+
 st.markdown(
     """
     <style>
@@ -1061,9 +1065,6 @@ st.markdown(
         max-width: min(92vw, 420px);
 
     }
-    .sticky-disclaimer__toggle {
-        display: none;
-    }
     .sticky-disclaimer__shell {
         display: flex;
         align-items: flex-start;
@@ -1112,9 +1113,6 @@ st.markdown(
         transform: translateY(-1px);
         outline: 2px solid rgba(248, 250, 252, 0.45);
         outline-offset: 2px;
-    }
-    .sticky-disclaimer__toggle:checked + .sticky-disclaimer__shell {
-        display: none;
     }
     @media (max-width: 640px) {
         .sticky-disclaimer__shell {
@@ -1538,17 +1536,39 @@ st.caption(
     "Ask smart questions, track the answers, and decide whether the card describes an AI system."
 )
 
-st.markdown(
-    """
-    <div class="sticky-disclaimer">
-        <input type="checkbox" id="ai-disclaimer-toggle" class="sticky-disclaimer__toggle" />
-        <div class="sticky-disclaimer__shell" role="status" aria-live="polite">
-            <div class="sticky-disclaimer__icon">ℹ️</div>
-            <p class="sticky-disclaimer__text">Please note that some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Always remember to label AI-generated content when sharing it.</p>
-            <label for="ai-disclaimer-toggle" class="sticky-disclaimer__close" role="button" tabindex="0" aria-label="Dismiss disclaimer">×</label>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+if not st.session_state.disclaimer_dismissed:
+    dismissal_event = components.html(
+        """
+        <script>
+        const parentDoc = window.parent.document;
+        if (!parentDoc.getElementById("ai-disclaimer-banner")) {
+            const banner = parentDoc.createElement("div");
+            banner.id = "ai-disclaimer-banner";
+            banner.className = "sticky-disclaimer";
+            banner.setAttribute("role", "region");
+            banner.innerHTML = `
+                <div class="sticky-disclaimer__shell" role="status" aria-live="polite">
+                    <div class="sticky-disclaimer__icon">ℹ️</div>
+                    <p class="sticky-disclaimer__text">Please note that some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Always remember to label AI-generated content when sharing it.</p>
+                    <button type="button" class="sticky-disclaimer__close" aria-label="Dismiss disclaimer">×</button>
+                </div>
+            `;
+            parentDoc.body.appendChild(banner);
+
+            const closeButton = banner.querySelector(".sticky-disclaimer__close");
+            if (closeButton) {
+                closeButton.addEventListener("click", () => {
+                    banner.remove();
+                    window.parent.postMessage({isStreamlitMessage: true, type: "streamlit:setComponentValue", value: "dismissed"}, "*");
+                });
+            }
+        }
+        </script>
+        """,
+        height=0,
+    )
+
+    if dismissal_event == "dismissed":
+        st.session_state.disclaimer_dismissed = True
+        st.rerun()
 
