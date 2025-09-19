@@ -53,7 +53,7 @@ QUESTIONS: List[Question] = [
     Question(
         "inf_rules_only",
         "Does it work following only human-programmed rules?",
-        {"yes": "not_ai_ind", "no": "def_not_ai"},
+        {"yes": "def_not_ai", "no": "ai_ind"},
         "rules_only",
     ),
     Question(
@@ -79,13 +79,13 @@ QUESTIONS: List[Question] = [
     Question(
         "out_creates_content",
         "Does it create content (text, images, video, audio)?",
-        {"yes": "ai_ind", "no": "not_ai_ind"},
+        {"yes": "ai_ind", "no": "neutral"},
         "creates_content",
     ),
     Question(
         "out_recommends",
         "Does it provide recommendations (e.g., suggesting actions or products)?",
-        {"yes": "ai_ind", "no": "not_ai_ind"},
+        {"yes": "ai_ind", "no": "neutral"},
         "recommends",
     ),
     Question(
@@ -98,14 +98,14 @@ QUESTIONS: List[Question] = [
     # 3. Autonomy
     Question(
         "auton_can_do_on_own",
-        "Can the system do something on its own once it receives input (without a person pressing every button)?",
+        "Can the system do something on its own once it receives input (a human does not have to tell it exactly what to do and how to do it)?",
         {"yes": "ai_ind", "no": "def_not_ai"},
         "can_do_on_own",
     ),
     Question(
         "auton_full_autonomy",
         "Does it act with full autonomy, making decisions that directly affect the world without human review?",
-        {"yes": "ai_ind", "no": "def_not_ai"},
+        {"yes": "def_ai", "no": "neutral"},
         "acts_full_autonomy",
     ),
     Question(
