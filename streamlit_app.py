@@ -25,6 +25,7 @@ class Card:
     name: str
     is_ai_system: bool  # hidden in UI until reveal
     description: str
+    summary: str
     props: Dict[str, bool] = field(default_factory=dict)
 
 
@@ -173,6 +174,11 @@ CARDS_AI: List[Card] = [
             "Objective: Predict how to respond and generate human-like content. "
             "Output: A written summary of the document."
         ),
+        summary=wrap_desc(
+            "This system answers user inquiries by summarizing documents based on text messages. "
+            "It has been trained on a vast range of information to create human-like responses, ultimately "
+            "delivering a concise written summary."
+        ),
         props=mk_props(
             predicts=True,
             creates_content=True,
@@ -195,6 +201,11 @@ CARDS_AI: List[Card] = [
             "How it works: when developed it is shown thousands of emails labeled as spam or not spam. "
             "Objective: Predict whether a message is spam. "
             "Output: the incoming email goes to inbox or spam folder."
+        ),
+        summary=wrap_desc(
+            "This system assesses incoming emails by analyzing their subject, sender, and body content. "
+            "It has learned from a collection of emails labeled as spam or not to determine the nature of new "
+            "messages, sorting them into the inbox or spam folder accordingly."
         ),
         props=mk_props(
             predicts=True,
@@ -220,6 +231,11 @@ CARDS_AI: List[Card] = [
             "Objective: Predict which molecules act like known drugs. "
             "Output: a list of potential drug candidates."
         ),
+        summary=wrap_desc(
+            "This tool helps identify potential drug candidates by analyzing molecular structures and chemical "
+            "properties. It recognizes patterns within these molecules to suggest which ones may act similarly "
+            "to established drugs."
+        ),
         props=mk_props(
             predicts=True,
             takes_decisions_direct=False,
@@ -240,6 +256,11 @@ CARDS_AI: List[Card] = [
             "How it works: it updates recommendations based on how a person behaves online. "
             "Objective: Predict what content/products are most relevant. "
             "Output: suggests items tailored to the user."
+        ),
+        summary=wrap_desc(
+            "This service tailors suggestions for content or products by tracking a user's online behavior, "
+            "such as browsing history and viewing habits. It continuously updates recommendations to provide "
+            "items most relevant to the user's interests."
         ),
         props=mk_props(
             predicts=True,
@@ -262,6 +283,10 @@ CARDS_AI: List[Card] = [
             "Objective: Convert speech into text. "
             "Output: transcribed text."
         ),
+        summary=wrap_desc(
+            "This tool converts spoken audio into written text by interpreting the sounds of human speech. "
+            "It facilitates communication by transcribing what is said into a clear text format."
+        ),
         props=mk_props(
             predicts=True,
             creates_content=False,
@@ -283,6 +308,11 @@ CARDS_AI: List[Card] = [
             "Objective: Categorize object(s) in the photo. "
             "Output: classify what is in the picture."
         ),
+        summary=wrap_desc(
+            "This application analyzes uploaded photos to categorize the objects within them. It is trained on "
+            "a large dataset of images, enabling it to classify pictures accurately, for instance, determining "
+            "if an image features a dog or a cat."
+        ),
         props=mk_props(
             predicts=True,
             creates_content=False,
@@ -303,6 +333,11 @@ CARDS_AI: List[Card] = [
             "How it works: developed using past hiring outcomes to learn which candidate characteristics are a good fit. "
             "Objective: Predict candidate–job match. "
             "Output: ranked candidates / fit score."
+        ),
+        summary=wrap_desc(
+            "This system evaluates candidate applications by examining CVs and related details. It utilizes "
+            "historical hiring data to predict which candidates are the best fits for job positions, assisting "
+            "in the selection process."
         ),
         props=mk_props(
             predicts=True,
@@ -330,6 +365,10 @@ CARDS_NON_AI: List[Card] = [
             "Objective: Add, subtract, sort, or calculate. "
             "Output: A table or chart with the requested result."
         ),
+        summary=wrap_desc(
+            "This tool allows users to input numerical data into a structured sheet where they can perform "
+            "calculations and analyses using formulas. It generates tables or charts based on the provided data."
+        ),
         props=mk_props(
             rules_only=True,
             predicts=False,
@@ -351,6 +390,10 @@ CARDS_NON_AI: List[Card] = [
             "How it works: Follows the search rules exactly as written. "
             "Objective: Retrieve matching entries. "
             "Output: A list of results from the database."
+        ),
+        summary=wrap_desc(
+            "This system retrieves specific data from a database by processing straightforward inquiries. "
+            "It follows exact search rules to produce a list of matching entries."
         ),
         props=mk_props(
             rules_only=True,
@@ -374,6 +417,10 @@ CARDS_NON_AI: List[Card] = [
             "Objective: Show how much was sold, where, and when. "
             "Output: Charts and graphs."
         ),
+        summary=wrap_desc(
+            "This tool compiles and analyzes sales data, displaying totals and averages through built-in "
+            "formulas. It provides visual representations like charts and graphs to illustrate sales performance."
+        ),
         props=mk_props(
             rules_only=True,
             predicts=False,
@@ -395,6 +442,10 @@ CARDS_NON_AI: List[Card] = [
             "How it works: Counts answers and applies simple statistics. "
             "Objective: Summarize opinions or satisfaction levels. "
             "Output: Percentages and scores."
+        ),
+        summary=wrap_desc(
+            "This system summarizes feedback from questionnaires by counting answers and calculating basic "
+            "statistics. It generates percentages and scores to reflect levels of opinion or satisfaction."
         ),
         props=mk_props(
             rules_only=True,
@@ -418,6 +469,10 @@ CARDS_NON_AI: List[Card] = [
             "Objective: Estimate how many items will be sold tomorrow. "
             "Output: a single number prediction."
         ),
+        summary=wrap_desc(
+            "This tool uses historical sales data to estimate future sales activity. It calculates average daily "
+            "sales to produce a numerical prediction for items expected to be sold on the following day."
+        ),
         props=mk_props(
             rules_only=True,
             predicts=True,
@@ -439,6 +494,10 @@ CARDS_NON_AI: List[Card] = [
             "How it works: Calculates the average time it took to close them. "
             "Objective: Predict how long new tickets will take. "
             "Output: an estimated resolution time."
+        ),
+        summary=wrap_desc(
+            "This tool analyzes past support inquiry records to approximate the expected time for resolving new "
+            "tickets. It determines an average closure time to help gauge future support cases."
         ),
         props=mk_props(
             rules_only=True,
@@ -564,6 +623,11 @@ st.subheader("🕵️ Guess the hidden system")
 st.write(
     "Ask up to **five** yes/no questions, then decide whether the concealed card describes an AI system."
 )
+
+with st.container(border=True):
+    st.markdown("#### System overview")
+    st.markdown(f"**{current_card.name}**")
+    st.write(current_card.summary)
 
 feedback = st.session_state.pop("last_answer_feedback", None)
 if feedback:
