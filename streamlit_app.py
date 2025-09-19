@@ -1,12 +1,9 @@
 import html
-import os
 import random
 import re
 import textwrap
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
-
-os.environ["STREAMLIT_TELEMETRY"] = "0"
 
 import streamlit as st
 
