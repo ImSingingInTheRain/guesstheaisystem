@@ -683,7 +683,7 @@ def reset_game(pick_card_id: Optional[str] = None):
 
 
 st.set_page_config(page_title="AI Guess Who?", page_icon="🃏", layout="centered")
-st.title("🃏 AI Guess Who")
+st.title("🃏 AI Guess Who?")
 
 # --- Sidebar: new game ---
 with st.sidebar:
