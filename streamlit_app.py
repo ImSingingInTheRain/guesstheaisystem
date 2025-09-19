@@ -525,7 +525,7 @@ CARDS_NON_AI: List[Card] = [
     ),
     Card(
         id="na_ticket_eta",
-        name="Customer Service Time Estimator (Averaging)",
+        name="Customer Service Time Estimator",
         is_ai_system=False,
         description=wrap_desc(
             "Input: Records of past support tickets. "
@@ -819,11 +819,11 @@ if game["completed"] and game["user_final_guess"] is not None:
         for idx, (q_id, ans, lbl) in enumerate(game["asked"], start=1):
             q_obj = next(q for q in QUESTIONS if q.id == q_id)
             label_text = {
-                "def_ai": "Definitive: AI",
-                "def_not_ai": "Definitive: Not AI",
-                "ai_ind": "AI indicator",
-                "not_ai_ind": "Not-AI indicator",
-                "neutral": "Neutral",
+                "def_ai": "Clearly indicates this is an AI system",
+                "def_not_ai": "Clearly indicates this is NOT an AI system",
+                "ai_ind": "It suggests this is an AI system, but a certain answer would require more information",
+                "not_ai_ind": "It suggests this is NOT an AI system, but a certain answer would require more information",
+                "neutral": "Both AI and not-AI systems can have this property",
             }[lbl]
             st.write(f"Q{idx}: {q_obj.text} → {ans.capitalize()} — {label_text}")
 
