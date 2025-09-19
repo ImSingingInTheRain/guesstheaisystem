@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Tuple
 
 import streamlit as st
 
-st.set_option("browser.gatherUsageStats", False)
 
 # =========================
 # Types & constants
