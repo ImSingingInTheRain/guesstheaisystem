@@ -1054,10 +1054,12 @@ st.markdown(
     }
     .sticky-disclaimer {
         position: fixed;
+
         bottom: 0.85rem;
         right: 1.25rem;
         z-index: 999;
         max-width: min(92vw, 420px);
+
     }
     .sticky-disclaimer__toggle {
         display: none;
@@ -1065,6 +1067,7 @@ st.markdown(
     .sticky-disclaimer__shell {
         display: flex;
         align-items: flex-start;
+
         gap: 0.55rem;
         background: rgba(15, 23, 42, 0.88);
         border: 1px solid rgba(148, 163, 184, 0.35);
@@ -1097,6 +1100,7 @@ st.markdown(
         align-items: center;
         justify-content: center;
         font-size: 1.05rem;
+
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
@@ -1114,6 +1118,7 @@ st.markdown(
     }
     @media (max-width: 640px) {
         .sticky-disclaimer__shell {
+
             border-radius: 0.65rem;
             padding: 0.7rem 0.8rem;
             gap: 0.5rem;
@@ -1125,6 +1130,7 @@ st.markdown(
             width: 1.5rem;
             height: 1.5rem;
             font-size: 0.95rem;
+
         }
     }
     </style>
