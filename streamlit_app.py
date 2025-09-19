@@ -652,7 +652,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.subheader("🕵️ Guess the hidden system")
+st.subheader("🕵️ Can you guess if this is an AI system?")
 st.write(
     "Ask up to **five** yes/no questions, then decide whether the card below describes an AI system."
 )
