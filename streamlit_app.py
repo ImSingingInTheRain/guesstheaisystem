@@ -1070,15 +1070,17 @@ if game["completed"] and game["user_final_guess"] is not None:
         else:
             formatted = "<span class='reveal-card__empty'>No details provided.</span>"
         section_html_parts.append(
-            f"""
-            <div class=\"reveal-card__section\">
-                <div class=\"reveal-card__section-label\">{emoji} {section_name}</div>
-                <div class=\"reveal-card__section-body\">{formatted}</div>
-            </div>
-            """
+            textwrap.dedent(
+                f"""
+                <div class=\"reveal-card__section\">
+                    <div class=\"reveal-card__section-label\">{emoji} {section_name}</div>
+                    <div class=\"reveal-card__section-body\">{formatted}</div>
+                </div>
+                """
+            ).strip()
         )
     sections_html = "\n".join(section_html_parts)
-    st.markdown(
+    reveal_html = textwrap.dedent(
         f"""
         <div class=\"reveal-card\">
             <div class=\"reveal-card__header\">
@@ -1092,7 +1094,10 @@ if game["completed"] and game["user_final_guess"] is not None:
                 {sections_html}
             </div>
         </div>
-        """,
+        """
+    ).strip()
+    st.markdown(
+        reveal_html,
         unsafe_allow_html=True,
     )
 
