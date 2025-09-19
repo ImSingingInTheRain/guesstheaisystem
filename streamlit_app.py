@@ -1308,21 +1308,136 @@ if game["completed"] and game["user_final_guess"] is not None:
 
     st.divider()
     st.subheader("🔁 Play again")
-    col1, col2 = st.columns(2)
+    st.markdown(
+        """
+        <style>
+            form#play_again_random,
+            form#play_again_specific {
+                background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+                border: 1px solid #dbeafe;
+                border-radius: 1rem;
+                padding: 1.25rem;
+                box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+                display: flex;
+                flex-direction: column;
+                gap: 0.9rem;
+                height: 100%;
+            }
+
+            form#play_again_specific {
+                background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+                border-color: #fcd34d;
+            }
+
+            form#play_again_random .play-again-card__title,
+            form#play_again_specific .play-again-card__title {
+                font-size: 1.05rem;
+                font-weight: 700;
+                margin: 0;
+                color: #0f172a;
+            }
+
+            form#play_again_random .play-again-card__subtitle,
+            form#play_again_specific .play-again-card__subtitle {
+                font-size: 0.95rem;
+                margin: 0;
+                color: #475569;
+            }
+
+            .play-again-card__label {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #1d4ed8;
+                margin-bottom: -0.2rem;
+            }
+
+            form#play_again_random [data-testid="stFormSubmitButton"] button,
+            form#play_again_specific [data-testid="stFormSubmitButton"] button {
+                width: 100%;
+                border-radius: 999px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                padding: 0.6rem 1rem;
+            }
+
+            form#play_again_random [data-testid="stFormSubmitButton"],
+            form#play_again_specific [data-testid="stFormSubmitButton"] {
+                margin-top: auto;
+            }
+
+            form#play_again_specific div[data-baseweb="select"] {
+                background: #ffffff;
+                border-radius: 0.75rem;
+                border: 1px solid #cbd5f5;
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+            }
+
+            form#play_again_specific div[data-baseweb="select"]:focus-within {
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+                border-color: #2563eb;
+            }
+
+            @media (max-width: 640px) {
+                form#play_again_random,
+                form#play_again_specific {
+                    padding: 1rem;
+                    gap: 0.75rem;
+                }
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col1, col2 = st.columns(2, gap="large")
     with col1:
-        if st.button("New random game", type="primary"):
-            reset_game()
-            st.rerun()
+        with st.form("play_again_random"):
+            st.markdown(
+                "<div class='play-again-card__title'>🎲 New random game</div>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                "<p class='play-again-card__subtitle'>Shuffle the deck for a fresh mystery and restart your deduction journey.</p>",
+                unsafe_allow_html=True,
+            )
+            random_submit = st.form_submit_button(
+                "Start a random challenge",
+                type="primary",
+                use_container_width=True,
+            )
+            if random_submit:
+                reset_game()
+                st.rerun()
+
     with col2:
-        sel = st.selectbox(
-            "Or pick specific card",
-            options=ALL_CARDS,
-            format_func=lambda c: c.name,
-            key="again_pick_card",
-        )
-        if st.button("Start with chosen card", type="primary"):
-            reset_game(sel.id)
-            st.rerun()
+        with st.form("play_again_specific"):
+            st.markdown(
+                "<div class='play-again-card__title'>🎯 Pick a specific card</div>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                "<p class='play-again-card__subtitle'>Jump straight to a system you want to revisit or discuss.</p>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                "<div class='play-again-card__label'>Choose a card</div>",
+                unsafe_allow_html=True,
+            )
+            sel = st.selectbox(
+                "Or pick specific card",
+                options=ALL_CARDS,
+                format_func=lambda c: c.name,
+                key="again_pick_card",
+                label_visibility="collapsed",
+            )
+            specific_submit = st.form_submit_button(
+                "Start with chosen card",
+                type="primary",
+                use_container_width=True,
+            )
+            if specific_submit:
+                reset_game(sel.id)
+                st.rerun()
 
 st.markdown("---")
 st.caption(
