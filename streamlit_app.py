@@ -202,7 +202,11 @@ QUESTIONS: List[Question] = [
 
 
 def wrap_desc(s: str) -> str:
-    return "\n".join(textwrap.wrap(s, width=100))
+    """Normalize description/summary text without forcing manual line breaks."""
+
+    normalized = textwrap.dedent(s).strip()
+    # Collapse any internal whitespace so HTML can flow the text naturally based on layout.
+    return re.sub(r"\s+", " ", normalized)
 
 
 BASE_DEFAULTS = {
