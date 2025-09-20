@@ -729,58 +729,27 @@ if "show_ai_info" not in st.session_state:
     st.session_state.show_ai_info = False
 
 
-def render_info_trigger(
-    icon: str,
-    heading: str,
-    caption: str,
-    state_key: str,
-    button_key: str,
-    help_text: str,
-) -> None:
-    text_col, button_col = st.columns([1, 0.18])
-    with text_col:
-        st.markdown(
-            f"""
-            <div class="info-trigger__title">{icon} {html.escape(heading)}</div>
-            <p class="info-trigger__caption">{html.escape(caption)}</p>
-            """,
-            unsafe_allow_html=True,
-        )
-    with button_col:
-        st.markdown('<div class="info-trigger__button">', unsafe_allow_html=True)
-        toggle_label = "❔"
-        toggle_help = (
-            f"Hide {help_text}" if st.session_state[state_key] else f"Show {help_text}"
-        )
-        if st.button(
-            toggle_label,
-            key=button_key,
-            help=toggle_help,
-            use_container_width=True,
-        ):
-            st.session_state[state_key] = not st.session_state[state_key]
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-privacy_col, ai_col = st.columns(2)
-with privacy_col:
-    render_info_trigger(
-        "🔐",
-        "Privacy & anonymity",
-        "Review how the game keeps your session private.",
-        "show_privacy_info",
-        "privacy_info_button",
-        "Privacy & anonymity details",
-    )
-with ai_col:
-    render_info_trigger(
-        "🤖",
-        "AI-generated content",
-        "See how AI assisted with this experience.",
-        "show_ai_info",
-        "ai_info_button",
-        "AI-generated content notes",
-    )
+toggle_privacy_col, toggle_ai_col = st.columns(2)
+with toggle_privacy_col:
+    st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
+    if st.button(
+        "Pricacy info",
+        key="privacy_info_button",
+        help="Show or hide privacy details.",
+        use_container_width=True,
+    ):
+        st.session_state.show_privacy_info = not st.session_state.show_privacy_info
+    st.markdown("</div>", unsafe_allow_html=True)
+with toggle_ai_col:
+    st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
+    if st.button(
+        "AI Generated info",
+        key="ai_info_button",
+        help="Show or hide AI-generated content notes.",
+        use_container_width=True,
+    ):
+        st.session_state.show_ai_info = not st.session_state.show_ai_info
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if st.session_state.show_privacy_info:
     render_subtle_callout(
@@ -855,42 +824,28 @@ st.markdown(
         outline: 2px solid rgba(59, 130, 246, 0.45);
         outline-offset: 2px;
     }
-    .info-trigger__title {
-        font-weight: 600;
-        color: #0f172a;
-        font-size: 0.95rem;
-        line-height: 1.35;
-        margin-bottom: 0.05rem;
-    }
-    .info-trigger__caption {
-        color: #475569;
-        font-size: 0.78rem;
-        margin: 0;
-    }
-    .info-trigger__button {
+    .info-toggle {
         display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
-        padding-top: 0.35rem;
+        justify-content: flex-start;
+        padding-top: 0.3rem;
     }
-    .info-trigger__button button {
+    .info-toggle button {
         border-radius: 999px;
-        width: 2.3rem;
-        height: 2.3rem;
-        font-size: 1rem;
-        line-height: 1;
-        background: rgba(15, 23, 42, 0.06);
-        border: 1px solid rgba(148, 163, 184, 0.45);
+        padding: 0.35rem 0.9rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.5);
         color: #0f172a;
         transition: all 0.15s ease-in-out;
     }
-    .info-trigger__button button:hover {
-        background: rgba(59, 130, 246, 0.12);
-        border-color: rgba(59, 130, 246, 0.5);
+    .info-toggle button:hover {
+        background: rgba(59, 130, 246, 0.15);
+        border-color: rgba(59, 130, 246, 0.45);
         color: #1d4ed8;
     }
-    .info-trigger__button button:focus {
-        outline: 2px solid rgba(59, 130, 246, 0.35);
+    .info-toggle button:focus {
+        outline: 2px solid rgba(59, 130, 246, 0.45);
         outline-offset: 2px;
     }
     .subtle-callout {
