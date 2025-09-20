@@ -729,24 +729,22 @@ if "show_ai_info" not in st.session_state:
     st.session_state.show_ai_info = False
 
 
-toggle_privacy_col, toggle_ai_col = st.columns(2)
+toggle_privacy_col, toggle_ai_col, _info_toggle_spacer = st.columns([1, 1, 6])
 with toggle_privacy_col:
     st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
     if st.button(
-        "Pricacy info",
+        "Privacy",
         key="privacy_info_button",
         help="Show or hide privacy details.",
-        use_container_width=True,
     ):
         st.session_state.show_privacy_info = not st.session_state.show_privacy_info
     st.markdown("</div>", unsafe_allow_html=True)
 with toggle_ai_col:
     st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
     if st.button(
-        "AI Generated info",
+        "AI info",
         key="ai_info_button",
         help="Show or hide AI-generated content notes.",
-        use_container_width=True,
     ):
         st.session_state.show_ai_info = not st.session_state.show_ai_info
     st.markdown("</div>", unsafe_allow_html=True)
@@ -827,26 +825,32 @@ st.markdown(
     .info-toggle {
         display: flex;
         justify-content: flex-start;
-        padding-top: 0.3rem;
+        align-items: center;
+        padding-top: 0.15rem;
+        width: fit-content;
     }
     .info-toggle button {
-        border-radius: 999px;
-        padding: 0.35rem 0.9rem;
-        font-size: 0.82rem;
+        border-radius: 0.45rem;
+        padding: 0.3rem 0.65rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        background: rgba(148, 163, 184, 0.12);
-        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(148, 163, 184, 0.14);
+        border: 1px solid rgba(148, 163, 184, 0.6);
         color: #0f172a;
-        transition: all 0.15s ease-in-out;
+        white-space: nowrap;
+        transition: background 0.15s ease, border-color 0.15s ease,
+            color 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
     }
     .info-toggle button:hover {
-        background: rgba(59, 130, 246, 0.15);
-        border-color: rgba(59, 130, 246, 0.45);
+        background: rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.5);
         color: #1d4ed8;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.18);
     }
     .info-toggle button:focus {
-        outline: 2px solid rgba(59, 130, 246, 0.45);
-        outline-offset: 2px;
+        outline: 2px solid rgba(59, 130, 246, 0.5);
+        outline-offset: 1px;
     }
     .subtle-callout {
         background: rgba(241, 245, 249, 0.65);
