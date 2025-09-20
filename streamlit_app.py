@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 
 # =========================
@@ -699,6 +698,11 @@ def reset_game(pick_card_id: Optional[str] = None):
     }
 
 
+def toggle_flag(state_key: str) -> None:
+    """Flip a boolean flag stored in Streamlit session state."""
+    st.session_state[state_key] = not st.session_state.get(state_key, False)
+
+
 # =========================
 # Streamlit UI
 # =========================
@@ -709,6 +713,8 @@ st.title("🕵️  AI Guess Who?")
 
 if "show_privacy_info" not in st.session_state:
     st.session_state.show_privacy_info = False
+if "show_ai_info" not in st.session_state:
+    st.session_state.show_ai_info = False
 
 privacy_button_label = (
     "🔐 Show privacy & anonymity info"
@@ -716,13 +722,14 @@ privacy_button_label = (
     else "Hide privacy & anonymity info"
 )
 
-if st.button(
+st.button(
     privacy_button_label,
     key="toggle_privacy_info",
     type="secondary",
     use_container_width=True,
-):
-    st.session_state.show_privacy_info = not st.session_state.show_privacy_info
+    on_click=toggle_flag,
+    args=("show_privacy_info",),
+)
 
 if st.session_state.show_privacy_info:
     st.info(
@@ -732,10 +739,32 @@ if st.session_state.show_privacy_info:
         **Overview of our privacy analysis:**
         - Gameplay progress lives only inside your local Streamlit session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
         - Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.
-        - The AI-generated-content disclaimer runs entirely in your browser and simply updates local session state when you dismiss it.
         - Streamlit telemetry is disabled (`gatherUsageStats = false`), preventing usage statistics from being sent to Streamlit Cloud.
         """,
         icon="🔐",
+    )
+
+ai_button_label = (
+    "ℹ️ Show AI-generated content info"
+    if not st.session_state.show_ai_info
+    else "Hide AI-generated content info"
+)
+
+st.button(
+    ai_button_label,
+    key="toggle_ai_info",
+    type="secondary",
+    use_container_width=True,
+    on_click=toggle_flag,
+    args=("show_ai_info",),
+)
+
+if st.session_state.show_ai_info:
+    st.info(
+        """
+        Please note that some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Always remember to label AI-generated content when sharing it.
+        """,
+        icon="ℹ️",
     )
 
 # --- Sidebar: new game ---
@@ -760,9 +789,6 @@ if "game" not in st.session_state:
 
 game = st.session_state.game
 current_card = CARDS_BY_ID[game["card_id"]]
-
-if "disclaimer_dismissed" not in st.session_state:
-    st.session_state.disclaimer_dismissed = False
 
 st.markdown(
     """
@@ -1106,81 +1132,6 @@ st.markdown(
     .reveal-card__empty {
         color: #94a3b8;
         font-style: italic;
-    }
-    .sticky-disclaimer {
-        position: fixed;
-
-        bottom: 0.85rem;
-        right: 1.25rem;
-        z-index: 999;
-        max-width: min(92vw, 420px);
-
-    }
-    .sticky-disclaimer__shell {
-        display: flex;
-        align-items: flex-start;
-
-        gap: 0.55rem;
-        background: rgba(15, 23, 42, 0.88);
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        border-radius: 0.75rem;
-        padding: 0.75rem 0.85rem;
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
-        color: #f8fafc;
-        backdrop-filter: blur(6px);
-    }
-    .sticky-disclaimer__icon {
-        font-size: 1.1rem;
-        line-height: 1;
-        filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.25));
-        margin-top: 0.1rem;
-    }
-    .sticky-disclaimer__text {
-        margin: 0;
-        font-size: 0.85rem;
-        line-height: 1.45;
-    }
-    .sticky-disclaimer__close {
-        margin-left: auto;
-        background: rgba(248, 250, 252, 0.08);
-        border-radius: 999px;
-        border: 1px solid rgba(248, 250, 252, 0.25);
-        color: #f8fafc;
-        width: 2.15rem;
-        height: 2.15rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.35rem;
-
-        cursor: pointer;
-        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-    }
-    .sticky-disclaimer__close:hover,
-    .sticky-disclaimer__close:focus,
-    .sticky-disclaimer__close:focus-visible {
-        background: rgba(248, 250, 252, 0.25);
-        color: #ffffff;
-        transform: translateY(-1px);
-        outline: 2px solid rgba(248, 250, 252, 0.45);
-        outline-offset: 2px;
-    }
-    @media (max-width: 640px) {
-        .sticky-disclaimer__shell {
-
-            border-radius: 0.65rem;
-            padding: 0.7rem 0.8rem;
-            gap: 0.5rem;
-        }
-        .sticky-disclaimer__text {
-            font-size: 0.82rem;
-        }
-        .sticky-disclaimer__close {
-            width: 1.9rem;
-            height: 1.9rem;
-            font-size: 1.2rem;
-
-        }
     }
     </style>
     """,
@@ -1587,40 +1538,3 @@ st.markdown("---")
 st.caption(
     "Ask smart questions, track the answers, and decide whether the card describes an AI system."
 )
-
-if not st.session_state.disclaimer_dismissed:
-    dismissal_event = components.html(
-        """
-        <script>
-        const parentDoc = window.parent.document;
-        if (!parentDoc.getElementById("ai-disclaimer-banner")) {
-            const banner = parentDoc.createElement("div");
-            banner.id = "ai-disclaimer-banner";
-            banner.className = "sticky-disclaimer";
-            banner.setAttribute("role", "region");
-            banner.innerHTML = `
-                <div class="sticky-disclaimer__shell" role="status" aria-live="polite">
-                    <div class="sticky-disclaimer__icon">ℹ️</div>
-                    <p class="sticky-disclaimer__text">Please note that some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Always remember to label AI-generated content when sharing it.</p>
-                    <button type="button" class="sticky-disclaimer__close" aria-label="Dismiss disclaimer">×</button>
-                </div>
-            `;
-            parentDoc.body.appendChild(banner);
-
-            const closeButton = banner.querySelector(".sticky-disclaimer__close");
-            if (closeButton) {
-                closeButton.addEventListener("click", () => {
-                    banner.remove();
-                    window.parent.postMessage({isStreamlitMessage: true, type: "streamlit:setComponentValue", value: "dismissed"}, "*");
-                });
-            }
-        }
-        </script>
-        """,
-        height=0,
-    )
-
-    if dismissal_event == "dismissed":
-        st.session_state.disclaimer_dismissed = True
-        st.rerun()
-
