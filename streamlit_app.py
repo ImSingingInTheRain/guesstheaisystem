@@ -734,6 +734,8 @@ st.button(
 if st.session_state.show_privacy_info:
     st.info(
         """
+        No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.
+
         - Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
         - Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.
         - Telemetry is disabled, preventing usage statistics from being collected.
