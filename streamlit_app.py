@@ -114,19 +114,19 @@ QUESTIONS: List[Question] = [
     ),
     Question(
         "inf_rules_only",
-        "Does it work following only human-programmed rules?",
+        "Does it only follow fixed rules written by humans?",
         {"yes": "def_not_ai", "no": "ai_ind"},
         "rules_only",
     ),
     Question(
         "inf_output",
-        "Does it generate output data that provides a solution?",
+        "Does it generate output data that provides a solution to a problem?",
         {"yes": "neutral", "no": "not_ai_ind"},
         "generates_output",
     ),
     Question(
         "inf_influence",
-        "Can its outputs influence humans or other systems?",
+        "Can the system’s results influence what people or other systems do next?",
         {"yes": "neutral", "no": "not_ai_ind"},
         "influences",
     ),
@@ -134,7 +134,7 @@ QUESTIONS: List[Question] = [
     # 2. Outputs
     Question(
         "out_predicts",
-        "Does the system predict something?",
+        "Does it guess or forecast something about the future or about data it hasn’t seen before?",
         {"yes": "ai_ind", "no": "not_ai_ind"},
         "predicts",
     ),
@@ -146,13 +146,13 @@ QUESTIONS: List[Question] = [
     ),
     Question(
         "out_recommends",
-        "Does it provide recommendations (e.g., suggesting actions or products)?",
+        "Does it provide recommendations or suggest choices, actions, or products?",
         {"yes": "ai_ind", "no": "neutral"},
         "recommends",
     ),
     Question(
         "out_takes_decisions",
-        "Does it take decisions directly, without waiting for a human?",
+        "Does it make decisions on its own, without needing human approval first?",
         {"yes": "ai_ind", "no": "neutral"},
         "takes_decisions_direct",
     ),
@@ -160,25 +160,25 @@ QUESTIONS: List[Question] = [
     # 3. Autonomy
     Question(
         "auton_can_do_on_own",
-        "Can the system do something on its own once it receives input (a human does not have to tell it exactly what to do and how to do it)?",
+        "Once it receives an input, can it figure what to do without step-by-step human instructions?",
         {"yes": "ai_ind", "no": "def_not_ai"},
         "can_do_on_own",
     ),
     Question(
         "auton_full_autonomy",
-        "Does it act with full autonomy, making decisions that directly affect the world without human review?",
+        "Does it act entirely on its own, making real-world decisions without any human checking?",
         {"yes": "def_ai", "no": "neutral"},
         "acts_full_autonomy",
     ),
     Question(
         "auton_limited",
-        "Does it have limited autonomy (provides outputs but still needs humans to decide or act)?",
+        "Does it figure out on its own how to solve a problem, but leave the final decision to a human?",
         {"yes": "ai_ind", "no": "neutral"},
         "limited_autonomy",
     ),
     Question(
         "auton_non_autonomous",
-        "Is it non-autonomous, only working step by step when a human tells it exactly what to do?",
+        "Does it only work if a person gave it exact step-by-step instructions?",
         {"yes": "def_not_ai", "no": "ai_ind"},
         "non_autonomous",
     ),
@@ -192,7 +192,7 @@ QUESTIONS: List[Question] = [
     ),
     Question(
         "adapt_online_learns",
-        "Does it adapt and learn from new data while it operates?",
+        "Can it adjust or improve by learning from new data as it operates?",
         {"yes": "def_ai", "no": "neutral"},
         "adapts_online",
     ),
