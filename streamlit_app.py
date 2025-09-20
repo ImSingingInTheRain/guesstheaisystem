@@ -722,117 +722,13 @@ def render_subtle_callout(icon: str, title: str, body: str) -> None:
 
 st.set_page_config(page_title="AI Guess Who?", page_icon="🕵️", layout="centered")
 
-st.markdown(
-    """
-    <style>
-    .top-info-marker + div[data-testid="stHorizontalBlock"] {
-        position: sticky;
-        top: 0.6rem;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 0.45rem;
-        margin: 0 0 0.55rem;
-        margin-left: auto;
-        width: fit-content;
-        max-width: 100%;
-        padding: 0.35rem 0.45rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.72);
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
-        backdrop-filter: blur(6px);
-    }
-    .top-info-marker + div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        flex: 0 0 auto;
-        width: auto !important;
-        padding: 0 !important;
-    }
-    .top-info-marker + div[data-testid="stHorizontalBlock"] .info-toggle {
-        margin: 0;
-    }
-    .top-info-marker + div[data-testid="stHorizontalBlock"] .stButton > button {
-        padding: 0.32rem 0.95rem;
-        font-size: 0.82rem;
-        border-radius: 999px;
-    }
-    @media (max-width: 768px) {
-        .top-info-marker + div[data-testid="stHorizontalBlock"] {
-            position: static;
-            margin: 0 0 0.65rem;
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-            border-radius: 1rem;
-            padding: 0.4rem 0.55rem;
-        }
-        .top-info-marker + div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-            width: auto !important;
-        }
-        .top-info-marker + div[data-testid="stHorizontalBlock"] .stButton > button {
-            padding: 0.28rem 0.75rem;
-            font-size: 0.78rem;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 if "show_privacy_info" not in st.session_state:
     st.session_state.show_privacy_info = False
 if "show_ai_info" not in st.session_state:
     st.session_state.show_ai_info = False
 
 
-with st.container():
-    st.markdown('<div class="top-info-marker"></div>', unsafe_allow_html=True)
-    toggle_privacy_col, toggle_ai_col = st.columns(2, gap="small")
-    with toggle_privacy_col:
-        st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
-        if st.button(
-            "🔐 Privacy info",
-            key="privacy_info_button",
-            help="Show or hide privacy details.",
-        ):
-            st.session_state.show_privacy_info = not st.session_state.show_privacy_info
-        st.markdown("</div>", unsafe_allow_html=True)
-    with toggle_ai_col:
-        st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
-        if st.button(
-            "🤖 AI content notice",
-            key="ai_info_button",
-            help="Show or hide AI-generated content notes.",
-        ):
-            st.session_state.show_ai_info = not st.session_state.show_ai_info
-        st.markdown("</div>", unsafe_allow_html=True)
-
 st.title("🕵️  AI Guess Who?")
-
-if st.session_state.show_privacy_info:
-    render_subtle_callout(
-        "🔐",
-        "Privacy & anonymity",
-        """
-        <p>No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.</p>
-        <ul>
-            <li>Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).</li>
-            <li>Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.</li>
-            <li>Telemetry is disabled, preventing usage statistics from being collected.</li>
-        </ul>
-        """,
-    )
-
-if st.session_state.show_ai_info:
-    render_subtle_callout(
-        "🤖",
-        "AI-generated content",
-        """
-        <p>Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.</p>
-        """,
-    )
 
 # --- Sidebar: new game ---
 with st.sidebar:
@@ -849,6 +745,50 @@ with st.sidebar:
     if st.button("Start new game", type="primary", use_container_width=True):
         reset_game(chosen_id)
         st.rerun()
+
+    with st.expander("Show/hide info", expanded=False):
+        st.caption("Toggle the notices below to learn about privacy and AI content in this app.")
+
+        st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
+        if st.button(
+            "🔐 Privacy info",
+            key="privacy_info_button",
+            help="Show or hide privacy details.",
+        ):
+            st.session_state.show_privacy_info = not st.session_state.show_privacy_info
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
+        if st.button(
+            "🤖 AI content notice",
+            key="ai_info_button",
+            help="Show or hide AI-generated content notes.",
+        ):
+            st.session_state.show_ai_info = not st.session_state.show_ai_info
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        if st.session_state.show_privacy_info:
+            render_subtle_callout(
+                "🔐",
+                "Privacy & anonymity",
+                """
+                <p>No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.</p>
+                <ul>
+                    <li>Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).</li>
+                    <li>Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.</li>
+                    <li>Telemetry is disabled, preventing usage statistics from being collected.</li>
+                </ul>
+                """,
+            )
+
+        if st.session_state.show_ai_info:
+            render_subtle_callout(
+                "🤖",
+                "AI-generated content",
+                """
+                <p>Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.</p>
+                """,
+            )
 
 # Initialize state
 if "game" not in st.session_state:
