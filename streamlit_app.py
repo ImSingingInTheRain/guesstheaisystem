@@ -241,10 +241,11 @@ CARDS_AI: List[Card] = [
         name="Chatbot",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Detailed user prompts and any documents or snippets they want summarized. "
-            "How it works: A large language model trained on diverse texts reasons over the prompt to identify key themes and supporting details. "
-            "Objective: Produce an accurate, friendly response that distills the material into an easy-to-read summary. "
-            "Output: Polished written paragraphs capturing the main points of the source material."
+            "Input: User messages and any attached text (documents, snippets) to summarize. "
+            "How it works: It uses an AI model trained on large amounts of text to analyse the user message, understand the key points, and produce a clear summary that answers the user's request. "
+            "Output: Generated content — a concise written summary. "
+            "Level of autonomy: Limited autonomy — generates content, but a human decides what to do with it. "
+            "Adaptiveness: Does not change by itself during use; only improves when humans update the underlying AI model."
         ),
         summary=wrap_desc(
             "This system answers user inquiries by summarizing documents based on text messages. "
@@ -273,10 +274,11 @@ CARDS_AI: List[Card] = [
         name="Spam Filter",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Incoming email metadata such as sender, subject line, body text, and embedded links. "
-            "How it works: A supervised model compares each message against patterns learned from thousands of labeled spam and safe emails. "
-            "Objective: Judge the likelihood that the message is unwanted or malicious. "
-            "Output: Automatically routes the email into the inbox or spam folder with an optional warning flag."
+            "Input: Email details such as sender, subject, body text, and links. "
+            "How it works: It uses an AI model trained on examples of spam and legitimate emails to judge how likely a message is unwanted or malicious and route it accordingly. "
+            "Output: A decision — the email is delivered to inbox or moved to spam. "
+            "Level of autonomy: Can take decisions on its own for this task (automatically moves emails). "
+            "Adaptiveness: Does not change by itself during use; only changes when humans update the model or settings."
         ),
         summary=wrap_desc(
             "This system assesses incoming emails by analyzing their subject, sender, and body content. "
@@ -304,10 +306,11 @@ CARDS_AI: List[Card] = [
         name="Drug Discovery System",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Molecular structures, chemical descriptors, and lab screening results. "
-            "How it works: It analyzes structure–activity relationships learned from prior experiments to spot promising molecular motifs. "
-            "Objective: Prioritize compounds that behave like effective drugs and warrant further testing. "
-            "Output: Ranked shortlists of candidate molecules with scores or annotations."
+            "Input: Molecular structures, chemical descriptors, and laboratory screening results. "
+            "How it works: It uses an AI model trained on past experiment data to find patterns that indicate promising molecules and prioritize which compounds to test next. "
+            "Output: A recommendation — a ranked list of candidate molecules. "
+            "Level of autonomy: Limited autonomy — provides recommendations; humans decide which compounds to pursue. "
+            "Adaptiveness: Does not change by itself during use; only improves when humans retrain or update the model."
         ),
         summary=wrap_desc(
             "This tool helps identify potential drug candidates by analyzing molecular structures and chemical "
@@ -336,10 +339,11 @@ CARDS_AI: List[Card] = [
         name="Personalized Recommendation System",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Browsing activity, search history, ratings, and recent purchases for each person. "
-            "How it works: Collaborative and content-based algorithms update preference profiles as people interact with content. "
-            "Objective: Surface items the user is most likely to enjoy or act on next. "
-            "Output: Dynamic recommendation carousels, emails, or notifications tailored to the individual."
+            "Input: A person's browsing activity, searches, ratings, and recent purchases. "
+            "How it works: It uses an AI model trained on interaction data to learn preferences and suggest items a person is likely to engage with next. "
+            "Output: A recommendation — tailored product or content suggestions. "
+            "Level of autonomy: Limited autonomy — issues recommendations that may be shown automatically; humans (or users) decide whether to act. "
+            "Adaptiveness: Adapts at every interaction — updates suggestions as new behavior is observed."
         ),
         summary=wrap_desc(
             "This service tailors suggestions for content or products by tracking a user's online behavior, "
@@ -367,10 +371,11 @@ CARDS_AI: List[Card] = [
         name="Voice-to-Text Assistant",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Real-time or recorded speech audio from the user. "
-            "How it works: A speech recognition model converts acoustic signals into phonemes and maps them to words using language modeling. "
-            "Objective: Transcribe spoken language accurately with punctuation and casing. "
-            "Output: Editable text transcripts ready for messaging, captioning, or note taking."
+            "Input: Live or recorded speech audio. "
+            "How it works: It uses an AI model trained on speech and language data to convert sounds into words with punctuation and casing. "
+            "Output: Generated content — a text transcript. "
+            "Level of autonomy: Limited autonomy — produces transcripts; humans decide how to use them. "
+            "Adaptiveness: Does not change by itself during use; only improves when humans update the model."
         ),
         summary=wrap_desc(
             "This tool converts spoken audio into written text by interpreting the sounds of human speech. "
@@ -399,9 +404,10 @@ CARDS_AI: List[Card] = [
         is_ai_system=True,
         description=wrap_desc(
             "Input: Digital images uploaded or captured by the user. "
-            "How it works: A convolutional neural network detects visual patterns learned from millions of labeled photos. "
-            "Objective: Determine the most probable category or labels for the objects in view. "
-            "Output: Predicted classes and confidence scores describing the image."
+            "How it works: It uses an AI model trained on labeled photos to detect visual patterns and assign the most likely categories. "
+            "Output: A prediction — the most likely labels for the image with confidence scores. "
+            "Level of autonomy: Limited autonomy — produces predictions; humans decide actions based on them. "
+            "Adaptiveness: Does not change by itself during use; only improves when humans update the model."
         ),
         summary=wrap_desc(
             "This application analyzes uploaded photos to categorize the objects within them."
@@ -429,10 +435,11 @@ CARDS_AI: List[Card] = [
         name="Job Applicant Screening Tool",
         is_ai_system=True,
         description=wrap_desc(
-            "Input: Candidate résumés, application responses, and defined job requirements. "
-            "How it works: Models compare applicant attributes against historical hiring data and competency criteria. "
-            "Objective: Highlight applicants who best match the role while flagging potential risks. "
-            "Output: Ranked candidate lists, fit scores, and notes for recruiters."
+            "Input: Candidate CVs, application answers, and job requirements. "
+            "How it works: It uses an AI model trained on historical hiring data and competency criteria to score candidates and highlight likely fits. "
+            "Output: A recommendation — ranked candidate list with fit scores. "
+            "Level of autonomy: Limited autonomy — provides recommendations; humans make hiring decisions. "
+            "Adaptiveness: Does not change by itself during use; only changes when humans retrain or adjust the model/criteria."
         ),
         summary=wrap_desc(
             "This system evaluates candidate applications by examining CVs and related details. It utilizes "
@@ -465,10 +472,11 @@ CARDS_NON_AI: List[Card] = [
         name="Excel Spreadsheet",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Numbers, labels, and formulas typed into worksheet cells. "
-            "How it works: Built-in spreadsheet functions perform arithmetic and sorting exactly as configured. "
-            "Objective: Organize data and calculate totals or analyses requested by the user. "
-            "Output: Updated tables, charts, or cell values reflecting the entered formulas."
+            "Input: Numbers, text labels, and formulas entered in cells. "
+            "How it works: It strictly follows rules set by humans to perform calculations, sorting, and formatting exactly as configured. "
+            "Output: Updated cells, tables, and charts. "
+            "Level of autonomy: No autonomy — it can only follow human-set rules and never takes decisions on its own. "
+            "Adaptiveness: Always unchanged — behavior only changes if humans edit formulas or settings."
         ),
         summary=wrap_desc(
             "This tool allows users to input numerical data into a structured sheet where they can perform "
@@ -491,10 +499,11 @@ CARDS_NON_AI: List[Card] = [
         name="Database Search",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Structured queries specifying filters, fields, and sorting rules. "
-            "How it works: The database engine executes the query literally against indexed tables without adapting the logic. "
-            "Objective: Retrieve records that match the specified conditions. "
-            "Output: A list or table of rows returned by the query."
+            "Input: Structured queries with filters, fields, and sort order. "
+            "How it works: It strictly follows rules set by humans to run the query literally against stored tables and indexes. "
+            "Output: List or table of matching records. "
+            "Level of autonomy: No autonomy — it can only follow human-set rules and never takes decisions on its own. "
+            "Adaptiveness: Always unchanged — logic only changes if humans change the query or schema."
         ),
         summary=wrap_desc(
             "This system retrieves specific data from a database by processing straightforward inquiries. "
@@ -517,10 +526,11 @@ CARDS_NON_AI: List[Card] = [
         name="Sales Dashboard",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Transaction records including region, product, quantity, revenue, and dates. "
-            "How it works: Predefined aggregations and charts total the data and refresh visuals when new records load. "
-            "Objective: Present sales performance trends for quick review. "
-            "Output: Interactive charts, KPIs, and summary tables driven by the formulas."
+            "Input: Transaction data (region, product, quantity, revenue, dates). "
+            "How it works: It strictly follows rules set by humans to aggregate data and refresh charts using predefined formulas. "
+            "Output: Charts, KPIs, and summary tables. "
+            "Level of autonomy: No autonomy — it can only follow human-set rules and never takes decisions on its own. "
+            "Adaptiveness: Always unchanged — visuals/formulas only change if humans update them or the underlying data."
         ),
         summary=wrap_desc(
             "This tool compiles and analyzes sales data, displaying totals and averages through built-in "
@@ -543,10 +553,11 @@ CARDS_NON_AI: List[Card] = [
         name="Survey Summary Tool",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Completed survey responses collected from participants. "
-            "How it works: Deterministic routines count selections, average ratings, and compute simple statistics. "
-            "Objective: Describe overall sentiment or satisfaction levels without interpretation. "
-            "Output: Percentages, mean scores, and basic tables ready for reports."
+            "Input: Completed survey responses. "
+            "How it works: It strictly follows rules set by humans to count choices, average ratings, and compute simple statistics. "
+            "Output: Percentages, mean scores, and basic tables. "
+            "Level of autonomy: No autonomy — it can only follow human-set rules and never takes decisions on its own. "
+            "Adaptiveness: Always unchanged — calculations only change if humans modify the rules or inputs."
         ),
         summary=wrap_desc(
             "This system summarizes feedback from questionnaires by counting answers and calculating basic "
@@ -569,10 +580,11 @@ CARDS_NON_AI: List[Card] = [
         name="Inventory Forecaster",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Historical daily sales quantities for each item. "
-            "How it works: Calculates a rolling average of recent activity using fixed business rules without adapting over time. "
-            "Objective: Estimate the next day's demand to guide restocking. "
-            "Output: A single numeric forecast per item."
+            "Input: Historical daily sales for each item. "
+            "How it works: It strictly follows rules set by humans to compute a rolling average of recent sales and estimate the next day's demand. "
+            "Output: Next-day quantity estimate per item. "
+            "Level of autonomy: No autonomy — it can only follow human-set rules and never takes decisions on its own. "
+            "Adaptiveness: Always unchanged — predictions only change if humans adjust parameters or formulas."
         ),
         summary=wrap_desc(
             "This tool uses historical sales data to estimate future sales activity. It calculates average daily sales to produce a numerical prediction for items expected to be sold on the following day."
@@ -594,10 +606,11 @@ CARDS_NON_AI: List[Card] = [
         name="Customer Service Time Estimator",
         is_ai_system=False,
         description=wrap_desc(
-            "Input: Past support ticket timestamps such as creation, assignment, and resolution times. "
-            "How it works: Applies formula-based averages and optionally adds fixed buffers to represent workload. "
-            "Objective: Provide expectations for how long new tickets may remain open. "
-            "Output: An estimated resolution time communicated to customers or agents."
+            "Input: Past ticket timestamps (creation, assignment, resolution). "
+            "How it works: It strictly follows rules set by humans to average historical resolution times and apply fixed buffers to reflect workload. "
+            "Output: Expected resolution time for new tickets. "
+            "Level of autonomy: No autonomy — it can only follow human-set rules and never takes decisions on its own. "
+            "Adaptiveness: Always unchanged — estimates only change if humans update rules or the data trends shift."
         ),
         summary=wrap_desc(
             "This tool analyzes past support inquiry records to approximate the expected time for resolving new "
@@ -643,9 +656,16 @@ CARD_ICONS: Dict[str, str] = {
 
 
 def parse_card_sections(desc: str) -> Dict[str, str]:
-    """Parse Input/How it works/Objective/Output sections for pretty display."""
-    sections = {"Input": "", "How it works": "", "Objective": "", "Output": ""}
-    pattern = r"(Input|How it works|Objective|Output):"
+    """Parse structured description fields for the reveal view."""
+    section_names = [
+        "Input",
+        "How it works",
+        "Output",
+        "Level of autonomy",
+        "Adaptiveness",
+    ]
+    sections = {name: "" for name in section_names}
+    pattern = r"(" + "|".join(map(re.escape, section_names)) + r"):"
     parts = re.split(pattern, desc)
     current = None
     buf: List[str] = []
@@ -1320,10 +1340,11 @@ if game["completed"] and game["user_final_guess"] is not None:
     type_class = "ai" if truth_is_ai else "not-ai"
     type_label = "🤖 AI system" if truth_is_ai else "🧰 Non-AI tool"
     section_order = [
-        ("Input", "🔌"),
-        ("Objective", "🎯"),
+        ("Input", "📥"),
         ("How it works", "⚙️"),
         ("Output", "📤"),
+        ("Level of autonomy", "🕹️"),
+        ("Adaptiveness", "🔄"),
     ]
     section_html_parts: List[str] = []
     for section_name, emoji in section_order:
