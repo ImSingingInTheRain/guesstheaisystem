@@ -721,7 +721,53 @@ def render_subtle_callout(icon: str, title: str, body: str) -> None:
 
 
 st.set_page_config(page_title="AI Guess Who?", page_icon="🕵️", layout="centered")
-st.title("🕵️  AI Guess Who?")
+
+st.markdown(
+    """
+    <style>
+    .top-info-marker + div[data-testid="stHorizontalBlock"] {
+        position: sticky;
+        top: 0.5rem;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.35rem;
+        margin-left: -0.25rem;
+        width: fit-content;
+    }
+    .top-info-marker + div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        flex: 0 0 auto;
+        width: auto !important;
+        padding: 0 !important;
+    }
+    .top-info-marker + div[data-testid="stHorizontalBlock"] .info-toggle {
+        margin: 0;
+    }
+    .top-info-marker + div[data-testid="stHorizontalBlock"] .stButton > button {
+        padding: 0.35rem 0.9rem;
+        font-size: 0.8rem;
+        border-radius: 0.75rem;
+    }
+    @media (max-width: 768px) {
+        .top-info-marker + div[data-testid="stHorizontalBlock"] {
+            margin-left: 0;
+            top: 0.35rem;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .top-info-marker + div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+            width: auto !important;
+        }
+        .top-info-marker + div[data-testid="stHorizontalBlock"] .stButton > button {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.78rem;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 if "show_privacy_info" not in st.session_state:
     st.session_state.show_privacy_info = False
@@ -729,25 +775,29 @@ if "show_ai_info" not in st.session_state:
     st.session_state.show_ai_info = False
 
 
-toggle_privacy_col, toggle_ai_col = st.columns(2, gap="small")
-with toggle_privacy_col:
-    st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
-    if st.button(
-        "Privacy",
-        key="privacy_info_button",
-        help="Show or hide privacy details.",
-    ):
-        st.session_state.show_privacy_info = not st.session_state.show_privacy_info
-    st.markdown("</div>", unsafe_allow_html=True)
-with toggle_ai_col:
-    st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
-    if st.button(
-        "AI info",
-        key="ai_info_button",
-        help="Show or hide AI-generated content notes.",
-    ):
-        st.session_state.show_ai_info = not st.session_state.show_ai_info
-    st.markdown("</div>", unsafe_allow_html=True)
+with st.container():
+    st.markdown('<div class="top-info-marker"></div>', unsafe_allow_html=True)
+    toggle_privacy_col, toggle_ai_col = st.columns(2, gap="small")
+    with toggle_privacy_col:
+        st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
+        if st.button(
+            "Privacy",
+            key="privacy_info_button",
+            help="Show or hide privacy details.",
+        ):
+            st.session_state.show_privacy_info = not st.session_state.show_privacy_info
+        st.markdown("</div>", unsafe_allow_html=True)
+    with toggle_ai_col:
+        st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
+        if st.button(
+            "AI Generated Content notice",
+            key="ai_info_button",
+            help="Show or hide AI-generated content notes.",
+        ):
+            st.session_state.show_ai_info = not st.session_state.show_ai_info
+        st.markdown("</div>", unsafe_allow_html=True)
+
+st.title("🕵️  AI Guess Who?")
 
 if st.session_state.show_privacy_info:
     render_subtle_callout(
