@@ -734,12 +734,9 @@ st.button(
 if st.session_state.show_privacy_info:
     st.info(
         """
-        **No personal data is collected, your provided answers and interactions are not stored, and using this app is fully anonymous.**
-
-        **Overview of our privacy analysis:**
-        - Gameplay progress lives only inside your local Streamlit session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
+        - Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
         - Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.
-        - Streamlit telemetry is disabled (`gatherUsageStats = false`), preventing usage statistics from being sent to Streamlit Cloud.
+        - Telemetry is disabled, preventing usage statistics from being collected.
         """,
         icon="🔐",
     )
@@ -762,7 +759,7 @@ st.button(
 if st.session_state.show_ai_info:
     st.info(
         """
-        Please note that some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Always remember to label AI-generated content when sharing it.
+        Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.
         """,
         icon="ℹ️",
     )
