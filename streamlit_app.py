@@ -727,14 +727,22 @@ st.markdown(
     <style>
     .top-info-marker + div[data-testid="stHorizontalBlock"] {
         position: sticky;
-        top: 0.5rem;
+        top: 0.6rem;
         z-index: 1000;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        margin-bottom: 0.35rem;
-        margin-left: -0.25rem;
+        justify-content: flex-end;
+        gap: 0.45rem;
+        margin: 0 0 0.55rem;
+        margin-left: auto;
         width: fit-content;
+        max-width: 100%;
+        padding: 0.35rem 0.45rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+        backdrop-filter: blur(6px);
     }
     .top-info-marker + div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         flex: 0 0 auto;
@@ -745,22 +753,26 @@ st.markdown(
         margin: 0;
     }
     .top-info-marker + div[data-testid="stHorizontalBlock"] .stButton > button {
-        padding: 0.35rem 0.9rem;
-        font-size: 0.8rem;
-        border-radius: 0.75rem;
+        padding: 0.32rem 0.95rem;
+        font-size: 0.82rem;
+        border-radius: 999px;
     }
     @media (max-width: 768px) {
         .top-info-marker + div[data-testid="stHorizontalBlock"] {
-            margin-left: 0;
-            top: 0.35rem;
+            position: static;
+            margin: 0 0 0.65rem;
+            width: 100%;
+            justify-content: center;
             flex-wrap: wrap;
-            gap: 0.3rem;
+            gap: 0.35rem;
+            border-radius: 1rem;
+            padding: 0.4rem 0.55rem;
         }
         .top-info-marker + div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
             width: auto !important;
         }
         .top-info-marker + div[data-testid="stHorizontalBlock"] .stButton > button {
-            padding: 0.3rem 0.75rem;
+            padding: 0.28rem 0.75rem;
             font-size: 0.78rem;
         }
     }
@@ -781,7 +793,7 @@ with st.container():
     with toggle_privacy_col:
         st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
         if st.button(
-            "Privacy",
+            "🔐 Privacy info",
             key="privacy_info_button",
             help="Show or hide privacy details.",
         ):
@@ -790,7 +802,7 @@ with st.container():
     with toggle_ai_col:
         st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
         if st.button(
-            "AI Generated Content notice",
+            "🤖 AI content notice",
             key="ai_info_button",
             help="Show or hide AI-generated content notes.",
         ):
@@ -873,53 +885,53 @@ st.markdown(
         outline-offset: 2px;
     }
     .info-toggle {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        display: inline-flex;
+        align-items: stretch;
         padding-top: 0;
-        margin: 0.1rem 0 0.2rem;
+        margin: 0.05rem 0;
         width: fit-content;
     }
     .info-toggle button {
-        border-radius: 0.4rem;
-        padding: 0.22rem 0.6rem;
-        font-size: 0.72rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        padding: 0.3rem 0.95rem;
+        font-size: 0.78rem;
         font-weight: 600;
-        background: rgba(148, 163, 184, 0.12);
+        background: linear-gradient(
+            135deg,
+            rgba(148, 163, 184, 0.16),
+            rgba(148, 163, 184, 0.08)
+        );
         border: 1px solid rgba(148, 163, 184, 0.55);
         color: #0f172a;
         white-space: nowrap;
-        transition: background 0.15s ease, border-color 0.15s ease,
-            color 0.15s ease, box-shadow 0.15s ease;
-        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
-        line-height: 1.1;
+        transition: transform 0.15s ease, box-shadow 0.15s ease,
+            background 0.15s ease, border-color 0.15s ease,
+            color 0.15s ease;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+        line-height: 1.2;
     }
     .info-toggle button:hover {
-        background: rgba(59, 130, 246, 0.18);
-        border-color: rgba(59, 130, 246, 0.48);
+        transform: translateY(-1px);
+        background: linear-gradient(
+            135deg,
+            rgba(59, 130, 246, 0.18),
+            rgba(59, 130, 246, 0.12)
+        );
+        border-color: rgba(59, 130, 246, 0.45);
         color: #1d4ed8;
-        box-shadow: 0 3px 10px rgba(59, 130, 246, 0.16);
+        box-shadow: 0 10px 24px rgba(59, 130, 246, 0.22);
     }
     .info-toggle button:focus {
         outline: 2px solid rgba(59, 130, 246, 0.45);
-        outline-offset: 1px;
-    }
-    [data-testid="stHorizontalBlock"]:has(.info-toggle) {
-        gap: 0.45rem;
-        flex-wrap: nowrap;
-        align-items: center;
-        margin-bottom: 0.35rem;
-    }
-    [data-testid="stHorizontalBlock"]:has(.info-toggle) > div[data-testid="column"] {
-        flex: 0 0 auto;
+        outline-offset: 2px;
     }
     @media (max-width: 640px) {
         .info-toggle button {
-            font-size: 0.68rem;
-            padding: 0.2rem 0.55rem;
-        }
-        [data-testid="stHorizontalBlock"]:has(.info-toggle) {
-            gap: 0.35rem;
+            font-size: 0.74rem;
+            padding: 0.26rem 0.75rem;
         }
     }
     .subtle-callout {
