@@ -698,9 +698,21 @@ def reset_game(pick_card_id: Optional[str] = None):
     }
 
 
-def toggle_flag(state_key: str) -> None:
-    """Flip a boolean flag stored in Streamlit session state."""
-    st.session_state[state_key] = not st.session_state.get(state_key, False)
+def render_subtle_callout(icon: str, title: str, body: str) -> None:
+    """Render a compact, low-contrast information callout."""
+
+    st.markdown(
+        f"""
+        <div class="subtle-callout">
+            <span class="subtle-callout__icon">{icon}</span>
+            <div class="subtle-callout__content">
+                <div class="subtle-callout__title">{title}</div>
+                <div class="subtle-callout__body">{body}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # =========================
@@ -716,54 +728,81 @@ if "show_privacy_info" not in st.session_state:
 if "show_ai_info" not in st.session_state:
     st.session_state.show_ai_info = False
 
-privacy_button_label = (
-    "🔐 Show privacy & anonymity info"
-    if not st.session_state.show_privacy_info
-    else "Hide privacy & anonymity info"
-)
 
-st.button(
-    privacy_button_label,
-    key="toggle_privacy_info",
-    type="secondary",
-    use_container_width=True,
-    on_click=toggle_flag,
-    args=("show_privacy_info",),
-)
+def render_info_trigger(
+    icon: str,
+    heading: str,
+    caption: str,
+    state_key: str,
+    button_key: str,
+    help_text: str,
+) -> None:
+    text_col, button_col = st.columns([1, 0.18])
+    with text_col:
+        st.markdown(
+            f"""
+            <div class="info-trigger__title">{icon} {html.escape(heading)}</div>
+            <p class="info-trigger__caption">{html.escape(caption)}</p>
+            """,
+            unsafe_allow_html=True,
+        )
+    with button_col:
+        st.markdown('<div class="info-trigger__button">', unsafe_allow_html=True)
+        toggle_label = "❔"
+        toggle_help = (
+            f"Hide {help_text}" if st.session_state[state_key] else f"Show {help_text}"
+        )
+        if st.button(
+            toggle_label,
+            key=button_key,
+            help=toggle_help,
+            use_container_width=True,
+        ):
+            st.session_state[state_key] = not st.session_state[state_key]
+        st.markdown("</div>", unsafe_allow_html=True)
 
-if st.session_state.show_privacy_info:
-    st.info(
-        """
-        No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.
 
-        - Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
-        - Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.
-        - Telemetry is disabled, preventing usage statistics from being collected.
-        """,
-        icon="🔐",
+privacy_col, ai_col = st.columns(2)
+with privacy_col:
+    render_info_trigger(
+        "🔐",
+        "Privacy & anonymity",
+        "Review how the game keeps your session private.",
+        "show_privacy_info",
+        "privacy_info_button",
+        "Privacy & anonymity details",
+    )
+with ai_col:
+    render_info_trigger(
+        "🤖",
+        "AI-generated content",
+        "See how AI assisted with this experience.",
+        "show_ai_info",
+        "ai_info_button",
+        "AI-generated content notes",
     )
 
-ai_button_label = (
-    "ℹ️ Show AI-generated content info"
-    if not st.session_state.show_ai_info
-    else "Hide AI-generated content info"
-)
-
-st.button(
-    ai_button_label,
-    key="toggle_ai_info",
-    type="secondary",
-    use_container_width=True,
-    on_click=toggle_flag,
-    args=("show_ai_info",),
-)
+if st.session_state.show_privacy_info:
+    render_subtle_callout(
+        "🔐",
+        "Privacy & anonymity",
+        """
+        <p>No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.</p>
+        <ul>
+            <li>Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).</li>
+            <li>Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.</li>
+            <li>Telemetry is disabled, preventing usage statistics from being collected.</li>
+        </ul>
+        """,
+    )
 
 if st.session_state.show_ai_info:
-    st.info(
+    render_subtle_callout(
+        "🤖",
+        "AI-generated content",
         """
-        Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.
+        <p>Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.</p>
         """,
-        icon="ℹ️",
     )
 
 # --- Sidebar: new game ---
@@ -815,6 +854,81 @@ st.markdown(
     button[data-testid="baseButton-secondary"]:focus {
         outline: 2px solid rgba(59, 130, 246, 0.45);
         outline-offset: 2px;
+    }
+    .info-trigger__title {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        margin-bottom: 0.05rem;
+    }
+    .info-trigger__caption {
+        color: #475569;
+        font-size: 0.78rem;
+        margin: 0;
+    }
+    .info-trigger__button {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding-top: 0.35rem;
+    }
+    .info-trigger__button button {
+        border-radius: 999px;
+        width: 2.3rem;
+        height: 2.3rem;
+        font-size: 1rem;
+        line-height: 1;
+        background: rgba(15, 23, 42, 0.06);
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        color: #0f172a;
+        transition: all 0.15s ease-in-out;
+    }
+    .info-trigger__button button:hover {
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(59, 130, 246, 0.5);
+        color: #1d4ed8;
+    }
+    .info-trigger__button button:focus {
+        outline: 2px solid rgba(59, 130, 246, 0.35);
+        outline-offset: 2px;
+    }
+    .subtle-callout {
+        background: rgba(241, 245, 249, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 0.85rem;
+        padding: 0.75rem 0.95rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        color: #0f172a;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+    }
+    .subtle-callout__icon {
+        font-size: 1.35rem;
+        line-height: 1;
+        position: relative;
+        top: 0.1rem;
+    }
+    .subtle-callout__content {
+        flex: 1;
+    }
+    .subtle-callout__title {
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+        font-size: 0.95rem;
+    }
+    .subtle-callout__body {
+        color: #334155;
+    }
+    .subtle-callout__body ul {
+        margin: 0.4rem 0 0.1rem 1.1rem;
+        padding: 0;
+    }
+    .subtle-callout__body li {
+        margin-bottom: 0.25rem;
     }
     .question-card {
         background: var(--q-bg, #ffffff);
