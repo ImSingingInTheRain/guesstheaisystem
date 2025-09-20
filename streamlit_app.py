@@ -697,36 +697,12 @@ def reset_game(pick_card_id: Optional[str] = None):
         "user_guess_correct": None,
     }
 
-
-def render_subtle_callout(icon: str, title: str, body: str) -> None:
-    """Render a compact, low-contrast information callout."""
-
-    st.markdown(
-        f"""
-        <div class="subtle-callout">
-            <span class="subtle-callout__icon">{icon}</span>
-            <div class="subtle-callout__content">
-                <div class="subtle-callout__title">{title}</div>
-                <div class="subtle-callout__body">{body}</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
 # =========================
 # Streamlit UI
 # =========================
 
 
 st.set_page_config(page_title="AI Guess Who?", page_icon="🕵️", layout="centered")
-
-if "show_privacy_info" not in st.session_state:
-    st.session_state.show_privacy_info = False
-if "show_ai_info" not in st.session_state:
-    st.session_state.show_ai_info = False
-
 
 st.title("🕵️  AI Guess Who?")
 
@@ -746,47 +722,28 @@ with st.sidebar:
         reset_game(chosen_id)
         st.rerun()
 
-    st.caption("Toggle the notices below to learn about privacy and AI content in this app.")
+    st.caption("Click to expand the notices below and learn about privacy and AI content in this app.")
 
-    st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
-    if st.button(
-        "🔐 Privacy info",
-        key="privacy_info_button",
-        help="Show or hide privacy details.",
-    ):
-        st.session_state.show_privacy_info = not st.session_state.show_privacy_info
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown('<div class="info-toggle">', unsafe_allow_html=True)
-    if st.button(
-        "🤖 AI content notice",
-        key="ai_info_button",
-        help="Show or hide AI-generated content notes.",
-    ):
-        st.session_state.show_ai_info = not st.session_state.show_ai_info
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    if st.session_state.show_privacy_info:
-        render_subtle_callout(
-            "🔐",
-            "Privacy & anonymity",
+    with st.expander("🔐 Privacy info"):
+        st.markdown(
             """
-            <p>No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.</p>
-            <ul>
-                <li>Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).</li>
-                <li>Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.</li>
-                <li>Telemetry is disabled, preventing usage statistics from being collected.</li>
-            </ul>
-            """,
+            **Privacy & anonymity**
+
+            No personal data is collected—each game session is fully anonymous and none of your answers are saved or stored.
+
+            - Gameplay progress lives only inside your local session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
+            - Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.
+            - Telemetry is disabled, preventing usage statistics from being collected.
+            """
         )
 
-    if st.session_state.show_ai_info:
-        render_subtle_callout(
-            "🤖",
-            "AI-generated content",
+    with st.expander("🤖 AI content notice"):
+        st.markdown(
             """
-            <p>Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.</p>
-            """,
+            **AI-generated content**
+
+            Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.
+            """
         )
 
 # Initialize state
@@ -822,93 +779,6 @@ st.markdown(
     button[data-testid="baseButton-secondary"]:focus {
         outline: 2px solid rgba(59, 130, 246, 0.45);
         outline-offset: 2px;
-    }
-    .info-toggle {
-        display: inline-flex;
-        align-items: stretch;
-        padding-top: 0;
-        margin: 0.05rem 0;
-        width: fit-content;
-    }
-    .info-toggle button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        border-radius: 999px;
-        padding: 0.3rem 0.95rem;
-        font-size: 0.78rem;
-        font-weight: 600;
-        background: linear-gradient(
-            135deg,
-            rgba(148, 163, 184, 0.16),
-            rgba(148, 163, 184, 0.08)
-        );
-        border: 1px solid rgba(148, 163, 184, 0.55);
-        color: #0f172a;
-        white-space: nowrap;
-        transition: transform 0.15s ease, box-shadow 0.15s ease,
-            background 0.15s ease, border-color 0.15s ease,
-            color 0.15s ease;
-        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
-        line-height: 1.2;
-    }
-    .info-toggle button:hover {
-        transform: translateY(-1px);
-        background: linear-gradient(
-            135deg,
-            rgba(59, 130, 246, 0.18),
-            rgba(59, 130, 246, 0.12)
-        );
-        border-color: rgba(59, 130, 246, 0.45);
-        color: #1d4ed8;
-        box-shadow: 0 10px 24px rgba(59, 130, 246, 0.22);
-    }
-    .info-toggle button:focus {
-        outline: 2px solid rgba(59, 130, 246, 0.45);
-        outline-offset: 2px;
-    }
-    @media (max-width: 640px) {
-        .info-toggle button {
-            font-size: 0.74rem;
-            padding: 0.26rem 0.75rem;
-        }
-    }
-    .subtle-callout {
-        background: rgba(241, 245, 249, 0.65);
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        border-radius: 0.85rem;
-        padding: 0.75rem 0.95rem;
-        display: flex;
-        gap: 0.75rem;
-        align-items: flex-start;
-        color: #0f172a;
-        font-size: 0.92rem;
-        line-height: 1.5;
-        margin-bottom: 0.75rem;
-    }
-    .subtle-callout__icon {
-        font-size: 1.35rem;
-        line-height: 1;
-        position: relative;
-        top: 0.1rem;
-    }
-    .subtle-callout__content {
-        flex: 1;
-    }
-    .subtle-callout__title {
-        font-weight: 600;
-        margin-bottom: 0.15rem;
-        font-size: 0.95rem;
-    }
-    .subtle-callout__body {
-        color: #334155;
-    }
-    .subtle-callout__body ul {
-        margin: 0.4rem 0 0.1rem 1.1rem;
-        padding: 0;
-    }
-    .subtle-callout__body li {
-        margin-bottom: 0.25rem;
     }
     .question-card {
         background: var(--q-bg, #ffffff);
