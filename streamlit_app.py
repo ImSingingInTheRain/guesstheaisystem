@@ -707,6 +707,37 @@ def reset_game(pick_card_id: Optional[str] = None):
 st.set_page_config(page_title="AI Guess Who?", page_icon="🕵️", layout="centered")
 st.title("🕵️  AI Guess Who?")
 
+if "show_privacy_info" not in st.session_state:
+    st.session_state.show_privacy_info = False
+
+privacy_button_label = (
+    "🔐 Show privacy & anonymity info"
+    if not st.session_state.show_privacy_info
+    else "Hide privacy & anonymity info"
+)
+
+if st.button(
+    privacy_button_label,
+    key="toggle_privacy_info",
+    type="secondary",
+    use_container_width=True,
+):
+    st.session_state.show_privacy_info = not st.session_state.show_privacy_info
+
+if st.session_state.show_privacy_info:
+    st.info(
+        """
+        **No personal data is collected, your provided answers and interactions are not stored, and using this app is fully anonymous.**
+
+        **Overview of our privacy analysis:**
+        - Gameplay progress lives only inside your local Streamlit session (the drawn card, the preset questions you picked, whether you finished the round, and your final guess).
+        - Interactions rely solely on built-in widgets (radio buttons, select boxes, and buttons), so you never submit custom text or files to the app.
+        - The AI-generated-content disclaimer runs entirely in your browser and simply updates local session state when you dismiss it.
+        - Streamlit telemetry is disabled (`gatherUsageStats = false`), preventing usage statistics from being sent to Streamlit Cloud.
+        """,
+        icon="🔐",
+    )
+
 # --- Sidebar: new game ---
 with st.sidebar:
     st.header("New game")
