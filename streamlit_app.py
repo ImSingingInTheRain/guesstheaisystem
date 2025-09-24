@@ -737,7 +737,7 @@ with st.sidebar:
             """
         )
 
-    with st.expander("🤖 AI content notice"):
+    with st.expander("🤖 AI generated content notice"):
         st.markdown(
             """
             **AI-generated content**
