@@ -742,7 +742,7 @@ with st.sidebar:
             """
             **AI-generated content**
 
-            Some of the code and content of this app has been AI generated. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.
+            Some of the code and content of this app has been created with the help of AI. Humans have reviewed all AI generated content. Remember to label AI-generated content when sharing it.
             """
         )
 
